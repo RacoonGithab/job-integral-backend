@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  password   String?
+  isVerified Boolean   @default(false) @map("is_verified")
+  role       Roles     @default(EMPLOYEE)
+  isBlocked  Boolean   @default(false) @map("is_blocked")
+  blockedAt  DateTime? @map("blocked_at")
+
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  TemporaryPassword TemporaryPassword? @relation("UserTemporaryPassword")
+  VerificationCode  VerificationCode[] @relation("UserVerificationCode")
+  Session           Session[]          @relation("UserSession")
+
+  @@map("users")
+}
+
+enum Roles {
+  EMPLOYEE
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum VerificationCodeType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  SECOND_FACTOR_LOGIN
+}
+
+model Session {
+  id           String  @id @default(uuid())
+  refreshToken String  @unique @map("refresh_token")
+  accessToken  String  @unique @map("access_token")
+  isActive     Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation("UserSession", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model TemporaryPassword {
+  id           String   @id @default(uuid())
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @map("created_at")
+
+  userId String @unique @map("user_id")
+  user   User   @relation("UserTemporaryPassword", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("temporary_passwords")
+}
+
+model VerificationCode {
+  id               String               @id @default(uuid())
+  verificationCode String               @map("verification_code")
+  type             VerificationCodeType
+  isActive         Boolean              @default(true) @map("is_active")
+  attempts         Int                  @default(0)
+  expiredAt        DateTime             @map("expired_at")
+
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  User   User   @relation("UserVerificationCode", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("verification_codes")
+}
