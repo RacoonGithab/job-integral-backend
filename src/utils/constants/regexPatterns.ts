@@ -1,0 +1,18 @@
+export const regexPatterns = {
+    EMAIL: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    PASSWORD: /^[a-zA-Z0-9!@#$%^&*()_+=-]{6,12}$/,
+    VERIFICATION_CODE: /^\d{6}$/,
+    PHONE_NUMBER: /^\+[1-9]\d{1,14}$/,
+
+
+    FIRST_NAME: /^[a-zA-Zа-яА-ЯіїІЇєЄґҐ']{2,50}$/,
+    LAST_NAME: /^[a-zA-Zа-яА-ЯіїІЇєЄґҐ']{2,50}$/,
+    FULL_NAME: /^(?!.* {2})[a-zA-Zа-яА-ЯіїІЇєЄґҐ]{2,50}(?: [a-zA-Zа-яА-ЯіїІЇєЄґҐ'-]{2,50}){1,2}$/,
+
+    COMMENT: /^[a-zA-Zа-яА-Я0-9іїІЇєЄґҐ\s.,'"()\-!?;:@%&/\\\[\]{}+=_*#№]{1,1000}$/,
+
+    COMPANY_INSTITUTION_NAME: /^[\p{L}\p{N}\s.,'&-/#()@_]{2,150}$/u,
+
+    START_DATE: /^\d{4}-\d{2}-\d{2}$/,
+    END_DATE: /^\d{4}-\d{2}-\d{2}$/,
+} as const;
