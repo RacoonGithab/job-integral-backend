@@ -38,7 +38,7 @@ const loginUser = async (data: loginUserDto): Promise<tokenDto> => {
             throw new ApiError(401, error.INVALID_CREDENTIALS);
         }
 
-        await userRepository.updateUserByEmail(userDb.email)
+        await userRepository.updateUserVerificationStatus(userDb.email)
 
         const passwordResetToken = tokenUtils.generatePasswordResetToken(userDb.id);
 
