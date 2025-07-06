@@ -9,8 +9,8 @@ const resetPasswordRouter = express.Router();
 
 resetPasswordRouter.post(
     "/",
-    validateResetPasswordToken,
     validateRequestBody(resetPasswordSchema),
+    validateResetPasswordToken,
     catchAsync(resetPasswordController.resetPassword)
 );
 

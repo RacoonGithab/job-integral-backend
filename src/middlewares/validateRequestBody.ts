@@ -3,7 +3,7 @@ import { z, ZodSchema } from 'zod';
 
 export const validateRequestBody = (schema: ZodSchema) => (req: Request, res: Response, next: NextFunction) => {
     try {
-        req.body = schema.parse(req.body);
+        schema.parse(req.body);
         next();
     } catch (error) {
         if (error instanceof z.ZodError) {

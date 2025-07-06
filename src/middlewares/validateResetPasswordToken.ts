@@ -15,6 +15,6 @@ export const validateResetPasswordToken = async (
         'reset_token'
     );
 
-    req.body = { ...payload, resetToken: token };
+    req.body = { ...req.body, ...payload, resetToken: token };
     next();
 }

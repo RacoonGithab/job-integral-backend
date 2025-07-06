@@ -6,6 +6,6 @@ import {loginSchema} from "../schema/logineSchema";
 
 const authRouters = express.Router();
 
-authRouters.post("/login", validateRequestBody(loginSchema), catchAsync(authController.login));
+authRouters.post("/login", validateRequestBody(loginSchema), catchAsync(authController.loginUser));
 
 export default authRouters;
