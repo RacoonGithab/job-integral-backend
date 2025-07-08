@@ -12,6 +12,7 @@ import {verificationCodeRepository} from "../repositories/verificationCodeReposi
 import {VerificationCodeType} from "@prisma/client";
 import {EMAIL_DETAILS} from "../utils/constants/emailConstants";
 import {sendVerificationEmail} from "../utils/sendVerificationCode";
+import {passwordResetTokenRepository} from "../repositories/passwordResetTokenRepository";
 
 
 const loginUser = async (data: loginUserDto): Promise<tokenDto> => {
@@ -38,19 +39,39 @@ const loginUser = async (data: loginUserDto): Promise<tokenDto> => {
             throw new ApiError(401, error.INVALID_CREDENTIALS);
         }
 
-        await userRepository.updateUserVerificationStatus(userDb.email)
+        const verificationCode = createVerificationCode();
+
+        await verificationCodeRepository.createVerificationCode({
+            userId: userDb.id,
+            verificationCode: verificationCode,
+            expiredAt: createExpirationDate(new Date()),
+            createdAt: new Date(),
+            type: VerificationCodeType.PASSWORD_RESET,
+        });
+
+        const emailDetails = EMAIL_DETAILS[VerificationCodeType.PASSWORD_RESET];
+
+        await sendVerificationEmail(
+            userDb.email,
+            verificationCode,
+            emailDetails.subject,
+            emailDetails.fromName
+        );
 
         const passwordResetToken = tokenUtils.generatePasswordResetToken(userDb.id);
+
+        await passwordResetTokenRepository.createPasswordResetToken({
+            userId: userDb.id,
+            token: passwordResetToken,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        })
 
         return {
             accessToken: null,
             refreshToken: null,
             passwordResetToken: passwordResetToken
         };
-    }
-
-    if (!userDb.isVerified) {
-        throw new ApiError(403, error.EMAIL_NOT_VERIFIED);
     }
 
     const passwordMatch = await bcrypt.compare(data.password, userDb.password);

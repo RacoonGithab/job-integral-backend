@@ -86,13 +86,13 @@ export const validateToken = async (
     const payload = verifyFn(token);
 
     if (!payload) {
-        throw new ApiError(401, error.INVALID_TOKEN_HEADER);
+        throw new ApiError(401, error.INVALID_AUTHORIZATION_HEADER);
     }
 
     if (payload.jti) {
         const isBlacklisted = await tokenRedisUtil.isJtiBlacklisted(payload.jti);
         if (isBlacklisted) {
-            throw new ApiError(401, error.INVALID_TOKEN_HEADER);
+            throw new ApiError(401, error.INVALID_AUTHORIZATION_HEADER);
         }
     }
 

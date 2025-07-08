@@ -4,8 +4,16 @@ import {validateRequestBody} from "../middlewares/validateRequestBody";
 import {resetPasswordSchema} from "../schema/resetPasswordSchema";
 import {catchAsync} from "../middlewares/catchAsync";
 import {validateResetPasswordToken} from "../middlewares/validateResetPasswordToken";
+import {verifyPasswordResetCodeSchema} from "../schema/verifyPasswordResetCodeSchema";
 
 const resetPasswordRouter = express.Router();
+
+resetPasswordRouter.post(
+    "/verify-otp",
+    validateRequestBody(verifyPasswordResetCodeSchema),
+    validateResetPasswordToken,
+    catchAsync(resetPasswordController.verifyResetPasswordCode)
+)
 
 resetPasswordRouter.post(
     "/",

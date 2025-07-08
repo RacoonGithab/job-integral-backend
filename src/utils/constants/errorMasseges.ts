@@ -8,4 +8,8 @@ export const error = {
     ACTIVE_SESSION_EXISTS: "There is an active session",
     INVALID_AUTHORIZATION_HEADER: "Unauthorized - Invalid Authorization header",
     INVALID_TOKEN_HEADER: "Unauthorized - Invalid token",
+    VERIFICATION_CODE_NOT_FOUND: "Verification code not found",
+    VERIFICATION_CODE_EXCEEDED_ATTEMPTS_LIMIT: "Verification code entry limit reached, please try sending the code again",
+    VERIFICATION_CODE_MISMATCH: "Verification code does not match",
+    VERIFICATION_CODE_EXPIRED: "Verification code is expired",
 }

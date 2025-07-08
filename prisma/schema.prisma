@@ -14,20 +14,20 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(uuid())
-  email      String    @unique
-  password   String?
-  isVerified Boolean   @default(false) @map("is_verified")
-  role       Roles     @default(EMPLOYEE)
-  isBlocked  Boolean   @default(false) @map("is_blocked")
-  blockedAt  DateTime? @map("blocked_at")
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String?
+  role      Roles     @default(EMPLOYEE)
+  isBlocked Boolean   @default(false) @map("is_blocked")
+  blockedAt DateTime? @map("blocked_at")
 
   createdAt DateTime @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  TemporaryPassword TemporaryPassword? @relation("UserTemporaryPassword")
-  VerificationCode  VerificationCode[] @relation("UserVerificationCode")
-  Session           Session[]          @relation("UserSession")
+  TemporaryPassword  TemporaryPassword?   @relation("UserTemporaryPassword")
+  VerificationCode   VerificationCode[]   @relation("UserVerificationCode")
+  Session            Session[]            @relation("UserSession")
+  PasswordResetToken PasswordResetToken[] @relation("PasswordResetToken")
 
   @@map("users")
 }
@@ -85,4 +85,19 @@ model VerificationCode {
   User   User   @relation("UserVerificationCode", fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("verification_codes")
+}
+
+model PasswordResetToken {
+  id          String  @id @default(uuid())
+  token       String
+  isActive    Boolean @default(true) @map("is_active")
+  isConfirmed Boolean @default(false) @map("is_confirmed")
+
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  User   User   @relation("PasswordResetToken", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_token")
 }

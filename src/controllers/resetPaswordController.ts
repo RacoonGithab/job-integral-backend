@@ -8,6 +8,13 @@ const resetPassword = async (req: Request, res: Response) => {
     res.status(200).json({message:"Password changed"})
 }
 
+const verifyResetPasswordCode = async (req: Request, res: Response) => {
+    const { userId, resetToken, verificationCode } = req.body;
+    await resetPasswordService.verifyPasswordResetCode({userId, verificationCode, resetToken})
+    res.status(200).json({message:"Successful code verification"})
+}
+
 export const resetPasswordController = {
+    verifyResetPasswordCode,
     resetPassword
 }
