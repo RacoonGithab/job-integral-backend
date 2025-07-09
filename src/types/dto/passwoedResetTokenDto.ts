@@ -20,3 +20,11 @@ export interface confirmPasswordResetTokenDto {
     id: string,
     updatedAt: Date;
 }
+
+export interface requestPasswordResetDto {
+    email: string,
+}
+
+export interface deactivatePasswordResetTokenDto {
+    userId: string,
+}

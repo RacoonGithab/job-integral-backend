@@ -1,6 +1,6 @@
 import {
     confirmPasswordResetTokenDto,
-    createPasswordResetTokenDto,
+    createPasswordResetTokenDto, deactivatePasswordResetTokenDto,
     getPasswordResetTokenDto
 } from "../types/dto/passwoedResetTokenDto";
 import {PasswordResetToken} from "@prisma/client";
@@ -45,9 +45,23 @@ export const getConfirmedPasswordResetToken = async (data: getPasswordResetToken
     });
 };
 
+export const deactivateAllUserTokens = async (data: deactivatePasswordResetTokenDto): Promise<void> => {
+    await prismaClient.passwordResetToken.updateMany({
+        where: {
+            userId: data.userId,
+            isActive: true,
+        },
+        data: {
+            isActive: false,
+            updatedAt: new Date(),
+        },
+    });
+};
+
 export const passwordResetTokenRepository = {
     createPasswordResetToken,
     getPasswordResetTokenByUserId,
     confirmPasswordResetToken,
-    getConfirmedPasswordResetToken
+    getConfirmedPasswordResetToken,
+    deactivateAllUserTokens
 }

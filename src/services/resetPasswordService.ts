@@ -4,17 +4,76 @@ import ApiError from "../error/ApiError";
 import {error} from "../utils/constants/errorMasseges";
 import {createPasswordHash} from "../utils/createPasswordHash";
 import {tokenRedisUtil} from "../utils/tokenRedisUtils";
-import {verifyPasswordResetDto} from "../types/dto/passwoedResetTokenDto";
+import {requestPasswordResetDto, verifyPasswordResetDto} from "../types/dto/passwoedResetTokenDto";
 import {verificationCodeRepository} from "../repositories/verificationCodeRepository";
 import {VerificationCodeType} from "@prisma/client";
 import {env} from "../config/secrets";
 import {passwordResetTokenRepository} from "../repositories/passwordResetTokenRepository";
+import {checkForgotPasswordRateLimitExceeded, incrementForgotPasswordRequestCount} from "../utils/limitPasswordReset";
+import {createExpirationDate, createVerificationCode} from "../utils/createVerificationCode";
+import {EMAIL_DETAILS} from "../utils/constants/emailConstants";
+import {sendVerificationEmail} from "../utils/sendVerificationCode";
+import {tokenUtils} from "../utils/tokenUtils";
+
+const initiatePasswordReset = async (data: requestPasswordResetDto): Promise<string> => {
+    const userDb = await userRepository.getUserByEmail(data.email);
+
+    if (!userDb) {
+        throw new ApiError(404, error.USER_NOT_FOUND);
+    }
+
+    if (userDb.isBlocked) {
+        throw new ApiError(403, error.USER_BLOCKED);
+    }
+
+    if (await checkForgotPasswordRateLimitExceeded(data.email)) {
+        throw new ApiError(429, error.REQUEST_LIMIT_EXHAUSTED);
+    }
+
+    await passwordResetTokenRepository.deactivateAllUserTokens({userId: userDb.id});
+
+    const passwordResetToken = tokenUtils.generatePasswordResetToken(userDb.id);
+
+    await passwordResetTokenRepository.createPasswordResetToken({
+        userId: userDb.id,
+        token: passwordResetToken,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    })
+
+    const verificationCode = createVerificationCode();
+
+    await verificationCodeRepository.createVerificationCode({
+        userId: userDb.id,
+        verificationCode: verificationCode,
+        expiredAt: createExpirationDate(new Date()),
+        createdAt: new Date(),
+        type: VerificationCodeType.PASSWORD_RESET,
+    });
+
+    const emailDetails = EMAIL_DETAILS[VerificationCodeType.PASSWORD_RESET];
+
+    await sendVerificationEmail(
+        userDb.email,
+        verificationCode,
+        emailDetails.subject,
+        emailDetails.fromName
+    );
+
+    await incrementForgotPasswordRequestCount(data.email);
+
+    return passwordResetToken;
+}
 
 const verifyPasswordResetCode = async (data: verifyPasswordResetDto): Promise<void> => {
     const userDb = await userRepository.getUserById(data.userId);
 
     if (!userDb) {
         throw new ApiError(404, error.USER_NOT_FOUND);
+    }
+
+    if (userDb.isBlocked) {
+        throw new ApiError(403, error.USER_BLOCKED);
     }
 
     const dbResetToken = await passwordResetTokenRepository.getPasswordResetTokenByUserId({
@@ -94,10 +153,13 @@ const resetPassword = async (data: resetPasswordDto): Promise<void> => {
     });
 
 
+    await passwordResetTokenRepository.deactivateAllUserTokens({userId: userDb.id});
+
     await tokenRedisUtil.blackListToken(data.resetToken)
 }
 
 export const resetPasswordService = {
+    initiatePasswordReset,
     verifyPasswordResetCode,
     resetPassword
 }

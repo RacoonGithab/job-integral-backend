@@ -12,4 +12,5 @@ export const error = {
     VERIFICATION_CODE_EXCEEDED_ATTEMPTS_LIMIT: "Verification code entry limit reached, please try sending the code again",
     VERIFICATION_CODE_MISMATCH: "Verification code does not match",
     VERIFICATION_CODE_EXPIRED: "Verification code is expired",
+    REQUEST_LIMIT_EXHAUSTED: "Request limit exhausted",
 }
