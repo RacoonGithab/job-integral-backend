@@ -1,7 +1,7 @@
 import {prismaClient} from "../config/prismaClient";
-import {PasswordResetToken, User} from "@prisma/client";
+import {Roles, User} from "@prisma/client";
 import {updateUserPasswordDto} from "../types/dto/userDto";
-import resetPasswordRouter from "../routers/resetPasswordRouter";
+import {updateUserRoleDto} from "../types/dto/updateUserRoleDto";
 
 
 const getUserByEmail = async (email: string): Promise<User | null> => {
@@ -32,8 +32,16 @@ const updateUserPassword = async (data: updateUserPasswordDto): Promise<void> =>
     });
 };
 
+const updateUserRoleById = async (userId: string, newRole: Roles): Promise<User | null> => {
+    return prismaClient.user.update({
+        where: {id: userId},
+        data: {role: newRole}
+    })
+}
+
 export const userRepository = {
     getUserByEmail,
     getUserById,
-    updateUserPassword
+    updateUserPassword,
+    updateUserRoleById
 }

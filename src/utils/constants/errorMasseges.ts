@@ -13,4 +13,5 @@ export const error = {
     VERIFICATION_CODE_MISMATCH: "Verification code does not match",
     VERIFICATION_CODE_EXPIRED: "Verification code is expired",
     REQUEST_LIMIT_EXHAUSTED: "Request limit exhausted",
+    FORBIDDEN: "Access is denied",
 }
