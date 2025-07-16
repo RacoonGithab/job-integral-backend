@@ -14,7 +14,7 @@ const updateRole = async (data: updateUserRoleDto): Promise<void> => {
         throw new ApiError(403, error.USER_BLOCKED);
     }
 
-    await userRepository.updateUserRoleById(userDb.id, data.newRole);
+    await userRepository.updateUserRoleById({userId: userDb.id, newRole: data.newRole});
 }
 
 

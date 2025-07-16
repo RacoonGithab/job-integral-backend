@@ -16,8 +16,10 @@ import {tokenRedisUtil} from "./tokenRedisUtils";
 
 const generateAccessToken = (data: generateAccessTokenDto): string => {
     const payload = {
-        data,
-        jti: uuidv4()
+        userId: data.userId,
+        role: data.role,
+        sessionId: data.sessionId,
+        jti: data.jti
     }
     return jwt.sign(payload, env.JWT_ACCESS_SECRET, {expiresIn: env.ACCESS_TOKEN_EXPIRES_IN});
 }
@@ -32,8 +34,9 @@ const verifyAccessToken = (token: string): accessTokenPayload | null => {
 
 const generateRefreshToken = (data: generateRefreshTokenDto): string => {
     const payload = {
-        data,
-        jti: uuidv4()
+        userId: data.userId,
+        sessionId: data.sessionId,
+        jti: data.jti
     }
     return jwt.sign(payload, env.JWT_REFRESH_SECRET, {expiresIn: env.REFRESH_TOKEN_EXPIRES_IN})
 }

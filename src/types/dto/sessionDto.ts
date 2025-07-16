@@ -1,7 +1,15 @@
 export interface createSessionDto {
     userId: string;
-    accessToken: string;
-    refreshToken: string;
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface updateSessionDto {
+    id: string;
+    updatedAt: Date;
+}
+
+export interface refreshTokenDto {
+    userId: string;
+    sessionId: string;
 }

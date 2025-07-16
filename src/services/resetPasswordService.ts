@@ -3,7 +3,6 @@ import {userRepository} from "../repositories/userRepository";
 import ApiError from "../error/ApiError";
 import {error} from "../utils/constants/errorMasseges";
 import {createPasswordHash} from "../utils/createPasswordHash";
-import {tokenRedisUtil} from "../utils/tokenRedisUtils";
 import {requestPasswordResetDto, verifyPasswordResetDto} from "../types/dto/passwoedResetTokenDto";
 import {verificationCodeRepository} from "../repositories/verificationCodeRepository";
 import {VerificationCodeType} from "@prisma/client";
@@ -154,8 +153,6 @@ const resetPassword = async (data: resetPasswordDto): Promise<void> => {
 
 
     await passwordResetTokenRepository.deactivateAllUserTokens({userId: userDb.id});
-
-    await tokenRedisUtil.blackListToken(data.resetToken)
 }
 
 export const resetPasswordService = {

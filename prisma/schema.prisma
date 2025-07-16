@@ -45,10 +45,8 @@ enum VerificationCodeType {
 }
 
 model Session {
-  id           String  @id @default(uuid())
-  refreshToken String  @unique @map("refresh_token")
-  accessToken  String  @unique @map("access_token")
-  isActive     Boolean @default(true) @map("is_active")
+  id       String  @id @default(uuid())
+  isActive Boolean @default(true) @map("is_active")
 
   createdAt DateTime @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

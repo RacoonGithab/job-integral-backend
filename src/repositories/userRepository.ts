@@ -1,7 +1,7 @@
 import {prismaClient} from "../config/prismaClient";
-import {Roles, User} from "@prisma/client";
+import {User} from "@prisma/client";
 import {updateUserPasswordDto} from "../types/dto/userDto";
-import {updateUserRoleDto} from "../types/dto/updateUserRoleDto";
+import {updateRoleDto} from "../types/dto/updateUserRoleDto";
 
 
 const getUserByEmail = async (email: string): Promise<User | null> => {
@@ -32,10 +32,10 @@ const updateUserPassword = async (data: updateUserPasswordDto): Promise<void> =>
     });
 };
 
-const updateUserRoleById = async (userId: string, newRole: Roles): Promise<User | null> => {
+const updateUserRoleById = async (data: updateRoleDto): Promise<User | null> => {
     return prismaClient.user.update({
-        where: {id: userId},
-        data: {role: newRole}
+        where: {id: data.userId},
+        data: {role: data.newRole}
     })
 }
 

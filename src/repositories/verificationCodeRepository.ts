@@ -1,5 +1,5 @@
 import {
-    createVerificationCodeDto,
+    createVerificationCodeDto, getVerificationCodesDto,
     updateVerificationCodeDto,
     verifyVerificationCodeDto
 } from "../types/dto/verificationCodeDto";
@@ -48,9 +48,25 @@ const updateVerificationCodeById = async (data: updateVerificationCodeDto): Prom
     });
 }
 
+const getVerificationCodesTodayByUserId = async (data: getVerificationCodesDto): Promise<VerificationCode[]> => {
+    return prismaClient.verificationCode.findMany({
+        where: {
+            userId: data.userId,
+            createdAt: {
+                gte: data.startDate,
+                lte: data.endDate,
+            }
+        },
+        orderBy: {
+            createdAt: "desc",
+        }
+    });
+}
+
 export const verificationCodeRepository = {
     createVerificationCode,
     getLastActiveVerificationCode,
     incrementCodeAttempts,
-    updateVerificationCodeById
+    updateVerificationCodeById,
+    getVerificationCodesTodayByUserId
 }

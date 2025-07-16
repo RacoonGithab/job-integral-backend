@@ -14,4 +14,5 @@ export const error = {
     VERIFICATION_CODE_EXPIRED: "Verification code is expired",
     REQUEST_LIMIT_EXHAUSTED: "Request limit exhausted",
     FORBIDDEN: "Access is denied",
+    VERIFICATION_CODE_LIMIT_REACHED: "Daily verification code limit reached",
 }

@@ -13,6 +13,7 @@ export const env = {
     REFRESH_TOKEN_EXPIRES_IN: parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN || '3600', 10),
     RESET_PASSWORD_TOKEN_EXPIRES_IN: parseInt(process.env.RESET_PASSWORD_TOKEN_EXPIRES_IN || '600', 10),
     VERIFICATION_CODE_TTL: process.env.VERIFICATION_CODE_TTL!,
+    MAX_DAILY_VERIFICATION_CODES: parseInt(process.env.MAX_DAILY_VERIFICATION_CODES!),
     MAX_CODE_ATTEMPTS: parseInt(process.env.MAX_CODE_ATTEMPTS!),
     SMTP_EMAIL_HOST: process.env.SMTP_EMAIL_HOST as string | undefined,
     SMTP_EMAIL_PORT: process.env.SMTP_EMAIL_PORT ? parseInt(process.env.SMTP_EMAIL_PORT, 10) : undefined,
