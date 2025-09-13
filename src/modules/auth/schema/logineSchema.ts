@@ -1,5 +1,5 @@
 import {z} from "zod"
-import {regexPatterns} from "../utils/constants/regexPatterns";
+import {regexPatterns} from "../../../utils/constants/regexPatterns";
 
 export const loginSchema = z.object({
     email: z

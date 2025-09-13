@@ -1,5 +1,5 @@
 import {TemporaryPassword} from "@prisma/client";
-import {prismaClient} from "../config/prismaClient";
+import {prismaClient} from "../../../config/prismaClient";
 
 
 const getTemporaryPasswordByUserId = async (userId: string): Promise<TemporaryPassword | null> => {

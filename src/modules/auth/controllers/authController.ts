@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {authService} from "../services/authService";
-import {LoginResultDto} from "../types/dto/authDto";
+import {LoginResultDto} from "../../../types/dto/authDto";
 
 
 const loginUser = async (req: Request, res: Response) => {

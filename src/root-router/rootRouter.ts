@@ -1,7 +1,7 @@
 import express from 'express';
-import authRouters from "./authRouter";
-import resetPasswordRouter from "./resetPasswordRouter";
-import updateUserRoleRouter from "./updateUserRoleRouter";
+import authRouters from "../modules/auth/routers/authRouter";
+import resetPasswordRouter from "../modules/reset-password/routers/resetPasswordRouter";
+import updateUserRoleRouter from "../modules/auth/routers/updateUserRoleRouter";
 
 
 const rootRouter = express.Router();

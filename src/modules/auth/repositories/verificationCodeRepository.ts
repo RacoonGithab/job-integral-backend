@@ -2,9 +2,9 @@ import {
     createVerificationCodeDto, getVerificationCodesDto,
     updateVerificationCodeDto,
     verifyVerificationCodeDto
-} from "../types/dto/verificationCodeDto";
+} from "../../../types/dto/verificationCodeDto";
 import {VerificationCode} from "@prisma/client";
-import {prismaClient} from "../config/prismaClient";
+import {prismaClient} from "../../../config/prismaClient";
 
 
 const createVerificationCode = async (data: createVerificationCodeDto): Promise<VerificationCode> => {

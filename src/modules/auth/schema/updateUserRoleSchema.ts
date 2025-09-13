@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { regexPatterns } from "../utils/constants/regexPatterns";
-import {Roles} from "../types/enams/roleEnum";
+import { regexPatterns } from "../../../utils/constants/regexPatterns";
+import {Roles} from "../../../types/enams/roleEnum";
 
 
 export const updateUserRoleSchema = z.object({

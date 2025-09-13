@@ -2,9 +2,9 @@ import {
     confirmPasswordResetTokenDto,
     createPasswordResetTokenDto, deactivatePasswordResetTokenDto,
     getPasswordResetTokenDto
-} from "../types/dto/passwoedResetTokenDto";
+} from "../../../types/dto/passwoedResetTokenDto";
 import {PasswordResetToken} from "@prisma/client";
-import {prismaClient} from "../config/prismaClient";
+import {prismaClient} from "../../../config/prismaClient";
 
 
 const createPasswordResetToken = async (data: createPasswordResetTokenDto): Promise<PasswordResetToken> => {

@@ -1,7 +1,7 @@
-import {prismaClient} from "../config/prismaClient";
+import {prismaClient} from "../../../config/prismaClient";
 import {User} from "@prisma/client";
-import {updateUserPasswordDto} from "../types/dto/userDto";
-import {updateRoleDto} from "../types/dto/updateUserRoleDto";
+import {updateUserPasswordDto} from "../../../types/dto/userDto";
+import {updateRoleDto} from "../../../types/dto/updateUserRoleDto";
 
 
 const getUserByEmail = async (email: string): Promise<User | null> => {

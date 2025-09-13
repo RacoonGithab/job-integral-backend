@@ -1,6 +1,6 @@
 import express, {Express} from "express";
 import morgan from "morgan";
-import rootRouters from "./routers/rootRouter"
+import rootRouters from "./root-router/rootRouter"
 import {errorHandler} from "./middlewares/errorHandler";
 
 

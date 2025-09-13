@@ -1,9 +1,9 @@
 import express  from "express";
 import {resetPasswordController} from "../controllers/resetPaswordController";
-import {validateRequestBody} from "../middlewares/validateRequestBody";
+import {validateRequestBody} from "../../../middlewares/validateRequestBody";
 import {resetPasswordSchema} from "../schema/resetPasswordSchema";
-import {catchAsync} from "../middlewares/catchAsync";
-import {validateResetPasswordToken} from "../middlewares/validateResetPasswordToken";
+import {catchAsync} from "../../../middlewares/catchAsync";
+import {validateResetPasswordToken} from "../../../middlewares/validateResetPasswordToken";
 import {verifyPasswordResetCodeSchema} from "../schema/verifyPasswordResetCodeSchema";
 import {requestPasswordResetSchema} from "../schema/requestPasswordResetSchema";
 

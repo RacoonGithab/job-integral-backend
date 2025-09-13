@@ -6,22 +6,22 @@ import {
     logoutUserDto,
     refreshServiceInputDto,
     verifyLoginCodeDto
-} from "../types/dto/authDto";
+} from "../../../types/dto/authDto";
 import {v4 as uuidv4} from "uuid";
 import {endOfDay, startOfDay} from "date-fns";
-import ApiError from "../error/ApiError";
-import {error} from "../utils/constants/errorMasseges";
+import ApiError from "../../../error/ApiError";
+import {error} from "../../../utils/constants/errorMasseges";
 import {temporaryPasswordRepository} from "../repositories/temporaryPasswordRepository";
-import {tokenUtils} from "../utils/tokenUtils";
+import {tokenUtils} from "../../../utils/tokenUtils";
 import {sessionsRepository} from "../repositories/sessionRepository";
-import {createExpirationDate, createVerificationCode} from "../utils/createVerificationCode";
+import {createExpirationDate, createVerificationCode} from "../../../utils/createVerificationCode";
 import {verificationCodeRepository} from "../repositories/verificationCodeRepository";
 import {VerificationCodeType} from "@prisma/client";
-import {EMAIL_DETAILS} from "../utils/constants/emailConstants";
-import {sendVerificationEmail} from "../utils/sendVerificationCode";
-import {passwordResetTokenRepository} from "../repositories/passwordResetTokenRepository";
-import {env} from "../config/secrets";
-import {tokenRedisUtil} from "../utils/tokenRedisUtils";
+import {EMAIL_DETAILS} from "../../../utils/constants/emailConstants";
+import {sendVerificationEmail} from "../../../utils/sendVerificationCode";
+import {passwordResetTokenRepository} from "../../reset-password/repositories/passwordResetTokenRepository";
+import {env} from "../../../config/secrets";
+import {tokenRedisUtil} from "../../../utils/tokenRedisUtils";
 
 
 const loginUser = async (data: loginUserDto): Promise<LoginResultDto> => {

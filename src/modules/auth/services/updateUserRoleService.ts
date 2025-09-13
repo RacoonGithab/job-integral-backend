@@ -1,7 +1,7 @@
-import {updateUserRoleDto} from "../types/dto/updateUserRoleDto";
+import {updateUserRoleDto} from "../../../types/dto/updateUserRoleDto";
 import {userRepository} from "../repositories/userRepository";
-import ApiError from "../error/ApiError";
-import {error} from "../utils/constants/errorMasseges";
+import ApiError from "../../../error/ApiError";
+import {error} from "../../../utils/constants/errorMasseges";
 
 const updateRole = async (data: updateUserRoleDto): Promise<void> => {
     const userDb = await userRepository.getUserByEmail(data.email);

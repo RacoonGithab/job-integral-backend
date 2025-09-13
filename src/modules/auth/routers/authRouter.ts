@@ -1,11 +1,11 @@
 import express from 'express';
 import {authController} from "../controllers/authController";
-import {catchAsync} from "../middlewares/catchAsync";
-import {validateRequestBody} from "../middlewares/validateRequestBody";
+import {catchAsync} from "../../../middlewares/catchAsync";
+import {validateRequestBody} from "../../../middlewares/validateRequestBody";
 import {loginSchema} from "../schema/logineSchema";
 import {verifyLoginCodeSchema} from "../schema/verifyLoginCodeSchema";
-import {refreshTokenValidation} from "../middlewares/refreshTokenValidation";
-import {accessTokenValidation} from "../middlewares/accessTokenValidation";
+import {refreshTokenValidation} from "../../../middlewares/refreshTokenValidation";
+import {accessTokenValidation} from "../../../middlewares/accessTokenValidation";
 
 const authRouters = express.Router();
 

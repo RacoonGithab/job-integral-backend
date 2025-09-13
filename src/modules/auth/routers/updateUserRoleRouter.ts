@@ -1,9 +1,9 @@
 import express from "express";
-import {requireRole} from "../middlewares/roleCheckMiddleware";
-import {accessTokenValidation} from "../middlewares/accessTokenValidation";
-import {validateRequestBody} from "../middlewares/validateRequestBody";
+import {requireRole} from "../../../middlewares/roleCheckMiddleware";
+import {accessTokenValidation} from "../../../middlewares/accessTokenValidation";
+import {validateRequestBody} from "../../../middlewares/validateRequestBody";
 import {updateUserRoleSchema} from "../schema/updateUserRoleSchema";
-import {catchAsync} from "../middlewares/catchAsync";
+import {catchAsync} from "../../../middlewares/catchAsync";
 import {updateUserRoleController} from "../controllers/updateUserRoleController";
 
 

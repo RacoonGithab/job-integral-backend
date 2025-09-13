@@ -1,8 +1,8 @@
-import {prismaClient} from "../config/prismaClient";
+import {prismaClient} from "../../../config/prismaClient";
 import { Session } from '@prisma/client';
-import {createSessionDto, updateSessionDto} from "../types/dto/sessionDto";
-import {refreshTokenDto} from "../types/dto/sessionDto";
-import {logoutUserDto} from "../types/dto/authDto";
+import {createSessionDto, updateSessionDto} from "../../../types/dto/sessionDto";
+import {refreshTokenDto} from "../../../types/dto/sessionDto";
+import {logoutUserDto} from "../../../types/dto/authDto";
 
 
 const createSession = async (data: createSessionDto): Promise<Session> => {
