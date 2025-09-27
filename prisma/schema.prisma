@@ -28,12 +28,28 @@ model User {
   VerificationCode   VerificationCode[]   @relation("UserVerificationCode")
   Session            Session[]            @relation("UserSession")
   PasswordResetToken PasswordResetToken[] @relation("PasswordResetToken")
-
-  chats        ChatMember[]  @relation("ChatMember")
-  Messages     Message[]     @relation("Message")
-  messageReads MessageRead[] @relation("UserMessageReads")
+  UserProfile        UserProfile?         @relation("UserProfile")
 
   @@map("users")
+}
+
+model UserProfile {
+  id String @id @default(uuid())
+
+  firstName String @map("first_name")
+  lastName  String @map("last_name")
+
+  email       String? @map("contact_email")
+  phoneNumber String? @map("phone_number")
+  avatar      String?
+
+  userId String @unique @map("user_id")
+  user   User   @relation("UserProfile", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("user_profiles")
 }
 
 enum Roles {
@@ -102,84 +118,4 @@ model PasswordResetToken {
   User   User   @relation("PasswordResetToken", fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("password_reset_token")
-}
-
-model Chat {
-  id   String   @id @default(uuid())
-  name String?
-  type ChatType @default(DIRECT)
-
-  members  ChatMember[] @relation("ChatMember")
-  messages Message[]    @relation("Message")
-
-  createdAt DateTime @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("chats")
-}
-
-enum ChatType {
-  DIRECT
-  GROUP
-}
-
-model ChatMember {
-  id   String   @id @default(uuid())
-  role ChatRole @default(MEMBER)
-
-  user   User   @relation("ChatMember", fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  chat   Chat   @relation("ChatMember", fields: [chatId], references: [id], onDelete: Cascade)
-  chatId String
-
-  joinedAt  DateTime @map("joined_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@unique([userId, chatId])
-  @@index([chatId])
-  @@index([userId])
-  @@map("chat_members")
-}
-
-enum ChatRole {
-  CREATOR
-  ADMIN
-  MEMBER
-}
-
-model Message {
-  id   String @id @default(uuid())
-  text String
-
-  chat   Chat   @relation("Message", fields: [chatId], references: [id], onDelete: Cascade)
-  chatId String
-
-  sender   User   @relation("Message", fields: [senderId], references: [id], onDelete: Cascade)
-  senderId String
-
-  reads MessageRead[] @relation("MessageReads")
-
-  createdAt DateTime
-  editedAt  DateTime? @map("edited_at")
-
-  @@index([chatId])
-  @@index([senderId])
-  @@map("messages")
-}
-
-model MessageRead {
-  id        String @id @default(uuid())
-  messageId String @map("message_id")
-  userId    String @map("user_id")
-
-  message Message @relation("MessageReads", fields: [messageId], references: [id], onDelete: Cascade)
-  user    User    @relation("UserMessageReads", fields: [userId], references: [id], onDelete: Cascade)
-
-  readAt DateTime @map("read_at")
-
-  @@unique([messageId, userId])
-  @@index([messageId])
-  @@index([userId])
-  @@map("message_reads")
 }

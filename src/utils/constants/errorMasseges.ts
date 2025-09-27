@@ -15,4 +15,6 @@ export const error = {
     REQUEST_LIMIT_EXHAUSTED: "Request limit exhausted",
     FORBIDDEN: "Access is denied",
     VERIFICATION_CODE_LIMIT_REACHED: "Daily verification code limit reached",
+    CANNOT_CHAT_WITH_SELF: "You can't create a chat with yourself",
+    NOT_ENOUGH_USERS: "Group chat must have at least 2 members"
 }

@@ -6,4 +6,4 @@ async function hashPassword(password: string) {
     console.log(hashedPassword);
 }
 
-hashPassword('diiwebadn');
+hashPassword('Tensam');

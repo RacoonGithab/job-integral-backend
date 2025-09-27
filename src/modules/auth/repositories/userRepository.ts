@@ -21,6 +21,16 @@ const getUserById = async (userId: string): Promise<User | null> => {
     });
 }
 
+const findManyByIds = async (userIds: string[]): Promise<User[]> => {
+    return prismaClient.user.findMany({
+        where: {
+            id: {
+                in: userIds,
+            },
+        },
+    });
+};
+
 const updateUserPassword = async (data: updateUserPasswordDto): Promise<void> => {
     await prismaClient.user.update({
         where: {
@@ -43,5 +53,6 @@ export const userRepository = {
     getUserByEmail,
     getUserById,
     updateUserPassword,
-    updateUserRoleById
+    updateUserRoleById,
+    findManyByIds
 }
