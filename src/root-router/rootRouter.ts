@@ -2,7 +2,7 @@ import express from 'express';
 import authRouters from "../modules/auth/routers/authRouter";
 import resetPasswordRouter from "../modules/reset-password/routers/resetPasswordRouter";
 import updateUserRoleRouter from "../modules/auth/routers/updateUserRoleRouter";
-import chatRouter from "../modules/chat/routers/chatRouter";
+import chatRouter from "../modules/chat/routers/rootChatRouter";
 
 
 const rootRouter = express.Router();

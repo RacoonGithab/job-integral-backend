@@ -20,8 +20,13 @@ export interface sendMessageDto {
 
 
 export interface createGroupChatDto {
-    userId: string;           // ID создателя
-    chatName: string;         // Название группы
-    description?: string;     // Описание группы (опционально)
+    userId: string;
+    chatName: string;
+    description?: string;
     memberIds: string[];
+}
+
+export interface deleteChatDto {
+    userId: string;
+    chatId: string;
 }

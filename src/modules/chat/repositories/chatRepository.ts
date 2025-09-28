@@ -1,61 +1,18 @@
-import { ChatModel } from "../database/schemas/chat.schema";
+import {ChatModel} from "../database/schemas/chat.schema";
 import {
+    ChatBaseDTO,
     createPrivateChatRepoDto,
-    createGroupChatRepoDto,
     existingChatRepoDto,
     findChatForUserRepoDto,
     listChatsUserRepoDto
 } from "../../../types/dto/chat-DTO/chatRepoDto";
-import { Types } from "mongoose";
+import {Types} from "mongoose";
 import {ChatMemberModel} from "../database/schemas/chatMember.schema";
 import {IChat} from "../database/types/chat.types";
 import {ChatStatus, ChatType} from "../database/enums/chat.enums";
-
-const createPrivateChat = async (data: createPrivateChatRepoDto): Promise<IChat> => {
-    const chatDoc = new ChatModel({
-        type: ChatType.DIRECT,
-        status: ChatStatus.INITIATED,
-        createdBy: data.createdBy,
-        settings: {
-            isPublic: false,
-            allowInvites: false,
-            maxMembers: 2,
-        },
-        stats: {
-            memberCount: 2,
-            messageCount: 0,
-            lastActivityAt: new Date()
-        }
-    });
-
-    return await chatDoc.save();
-};
-
-
-const createGroupChat = async (data: createGroupChatRepoDto): Promise<IChat> => {
-    const chatDoc = new ChatModel({
-        type: ChatType.GROUP,
-        status: ChatStatus.ACTIVE,
-        name: data.chatName,
-        description: data.description,
-        createdBy: data.createdBy,
-        settings: {
-            isPublic: false,
-            allowInvites: true,
-            maxMembers: 100,
-            messageRetentionDays: 365,
-            allowFileUploads: true,
-            allowVoiceMessages: true
-        },
-        stats: {
-            memberCount: data.memberCount,
-            messageCount: 0,
-            lastActivityAt: new Date()
-        }
-    });
-
-    return await chatDoc.save();
-};
+import {MessageModel} from "../database/schemas/message.schema";
+import {IChatMember} from "../database/types/chatMember.types";
+import {IMessage} from "../database/types/message.types";
 
 const findPrivateChatBetweenUsers = async (data: existingChatRepoDto): Promise<IChat | null>=> {
     const existingChat = await ChatModel.aggregate([
@@ -153,128 +110,75 @@ const findListChatsByUserId = async (data: listChatsUserRepoDto): Promise<IChat[
 };
 
 
-const findChatForUser = async (data: findChatForUserRepoDto): Promise<IChat | null> => {
-    const chatObjectId = new Types.ObjectId(data.chatId);
 
-    const result = await ChatModel.aggregate([
-        {
-            $match: {
-                _id: chatObjectId,
-                status: { $ne: ChatStatus.DELETED }
-            }
-        },
-        {
-            $lookup: {
-                from: "chatmembers",
-                localField: "_id",
-                foreignField: "chatId",
-                as: "userMembership",
-                pipeline: [
-                    {
-                        $match: {
-                            userId: data.userId,
-                            isActive: true
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            $match: {
-                "userMembership": { $size: 1 }
-            }
-        },
-        {
-            $lookup: {
-                from: "chatmembers",
-                localField: "_id",
-                foreignField: "chatId",
-                as: "allMembers",
-                pipeline: [
-                    {
-                        $match: {
-                            isActive: true
-                        }
-                    },
-                    {
-                        $project: {
-                            userId: 1,
-                            role: 1,
-                            userInfo: 1,
-                            settings: 1,
-                            joinedAt: 1,
-                            lastSeenAt: 1,
-                            unreadCount: 1
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            $lookup: {
-                from: "messages",
-                localField: "_id",
-                foreignField: "chatId",
-                as: "recentMessages",
-                pipeline: [
-                    {
-                        $match: {
-                            isDeleted: false
-                        }
-                    },
-                    {
-                        $sort: { timestamp: -1 }
-                    },
-                    {
-                        $limit: 50
-                    },
-                    {
-                        $project: {
-                            senderId: 1,
-                            senderInfo: 1,
-                            content: 1,
-                            timestamp: 1,
-                            status: 1,
-                            isEdited: 1,
-                            reactions: 1
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            $project: {
-                _id: 1,
-                type: 1,
-                name: 1,
-                description: 1,
-                avatar: 1,
-                status: 1,
-                createdBy: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                settings: 1,
-                stats: 1,
-                lastMessage: 1,
-                members: "$allMembers",
-                messages: {
-                    $reverseArray: "$recentMessages"
-                },
-                currentUserInfo: {
-                    $arrayElemAt: ["$userMembership", 0]
-                }
-            }
-        }
-    ]);
+export const findChatForUser = async (data: findChatForUserRepoDto): Promise<ChatBaseDTO | null> => {
+    const chatId = new Types.ObjectId(data.chatId);
+    const requireActive = data.requireActive ?? true;
 
-    return result[0] || null;
+    const chat = await ChatModel.findOne({
+        _id: chatId,
+        status: { $ne: ChatStatus.DELETED }
+    }).lean();
+
+    if (!chat) {
+        return null;
+    }
+
+    const currentUserMembership = await ChatMemberModel.findOne({
+        chatId,
+        userId: data.userId
+    }).lean() as IChatMember | null;
+
+    if (!currentUserMembership) {
+        return null;
+    }
+
+
+    if (requireActive && !currentUserMembership.isActive) {
+        return null;
+    }
+
+    const members = await ChatMemberModel.find({
+        chatId,
+        isActive: true
+    })
+        .select('userId role userInfo settings joinedAt lastSeenAt unreadCount')
+        .lean() as IChatMember[];
+
+    const recentMessagesDesc = await MessageModel.find({
+        chatId,
+        isDeleted: false
+    })
+        .sort({ timestamp: -1 })
+        .limit(50)
+        .select('senderId senderInfo content timestamp status isEdited reactions');
+
+    const messages = recentMessagesDesc
+        .map(d => d.toObject() as IMessage)
+        .reverse();
+
+    return {
+        _id: chat._id,
+        type: chat.type,
+        status: chat.status,
+        name: chat.name,
+        description: chat.description,
+        avatar: chat.avatar,
+        createdBy: chat.createdBy,
+        createdAt: chat.createdAt,
+        updatedAt: chat.updatedAt,
+        settings: chat.settings,
+        stats: chat.stats,
+        lastMessage: chat.lastMessage,
+        members,
+        messages,
+        currentUserInfo: currentUserMembership
+    };
 };
 
 
 export const chatRepository = {
     findPrivateChatBetweenUsers,
-    createPrivateChat,
     findListChatsByUserId,
-    findChatForUser,
-    createGroupChat
+    findChatForUser
 }

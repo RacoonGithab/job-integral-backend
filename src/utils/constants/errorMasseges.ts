@@ -16,5 +16,8 @@ export const error = {
     FORBIDDEN: "Access is denied",
     VERIFICATION_CODE_LIMIT_REACHED: "Daily verification code limit reached",
     CANNOT_CHAT_WITH_SELF: "You can't create a chat with yourself",
-    NOT_ENOUGH_USERS: "Group chat must have at least 2 members"
+    NOT_ENOUGH_USERS: "Group chat must have at least 2 members",
+    CHAT_NOT_FOUND: "The chat does not exist",
+    CHAT_ALREADY_DELETED: "Chat has already been deleted",
+    CHAT_ARCHIVED: "The chat is already archived",
 }

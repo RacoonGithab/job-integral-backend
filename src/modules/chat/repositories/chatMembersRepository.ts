@@ -42,7 +42,28 @@ const isMemberUserChatById = async (data: isUserMemberOfChatDto): Promise<boolea
     return !!member;
 };
 
+const softLeaveMember = async (params: { chatId: Types.ObjectId; userId: string }): Promise<boolean> => {
+    const res = await ChatMemberModel.updateOne(
+        { chatId: params.chatId, userId: params.userId, isActive: true },
+        { $set: { isActive: false, leftAt: new Date(), userDeleted: true } }
+    );
+
+    return res.modifiedCount > 0;
+}
+
+const countActiveMembers = async (chatId: Types.ObjectId): Promise<number> => {
+    return ChatMemberModel.countDocuments({ chatId, isActive: true });
+}
+
+
+const deleteAllByChatId = async (chatId: Types.ObjectId): Promise<void> => {
+    await ChatMemberModel.deleteMany({ chatId });
+}
+
 export const chatMembersRepository = {
     isMemberUserChatById,
-    createChatMembersByIds
+    createChatMembersByIds,
+    softLeaveMember,
+    countActiveMembers,
+    deleteAllByChatId
 }
