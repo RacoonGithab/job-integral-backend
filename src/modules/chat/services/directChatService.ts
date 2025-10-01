@@ -2,18 +2,18 @@ import {userRepository} from "../../auth/repositories/userRepository";
 import ApiError from "../../../error/ApiError";
 import {error} from "../../../utils/constants/errorMasseges";
 import {
-    createChatDto,
-    deleteChatDto
+    createDirectChatDto,
+    leaveDirectChatDto
 } from "../../../types/dto/chat-DTO/chatDto";
 import {chatRepository} from "../repositories/chatRepository";
 import {IChat} from "../database/types/chat.types";
 import {userProfileRepository} from "../../user-profile/repositories/userProfileRepository";
 import {ChatRole} from "../database/enums/chatMember.enums";
 import {chatMembersRepository} from "../repositories/chatMembersRepository";
-import {ChatStatus} from "../database/enums/chat.enums";
+import {ChatStatus, ChatType} from "../database/enums/chat.enums";
 import {directChatRepository} from "../repositories/directChatRepository";
 
-const createDirectChat = async (data: createChatDto): Promise<IChat> => {
+const createDirectChat = async (data: createDirectChatDto): Promise<IChat> => {
 
     const [userDb, otherUserDb, userProfile, otherUserProfile] = await Promise.all([
         userRepository.getUserById(data.userId),
@@ -73,7 +73,7 @@ const createDirectChat = async (data: createChatDto): Promise<IChat> => {
     return savedChat;
 };
 
-const leaveDirectChat = async (data: deleteChatDto): Promise<void> => {
+const leaveDirectChat = async (data: leaveDirectChatDto): Promise<void> => {
     const userDb = await userRepository.getUserById(data.userId);
 
     const chatDb = await chatRepository.findChatForUser({
@@ -102,39 +102,32 @@ const leaveDirectChat = async (data: deleteChatDto): Promise<void> => {
         throw new ApiError(404, error.CHAT_ARCHIVED)
     }
 
+    if (chatDb.type !== ChatType.DIRECT) {
+        throw new ApiError(400, error.WRONG_CHAT_TYPE);
+    }
+
     const current = chatDb.currentUserInfo;
 
     if (!current || !current.isActive) {
         return
     }
 
-    await directChatRepository.leaveDirectChat({
-        chatId: chatDb._id,
-        userId: data.userId
-    });
+    const changed = await chatMembersRepository.softLeaveMember({ chatId: chatDb._id, userId: data.userId });
 
-    // if (chatDb.type === ChatType.GROUP) {
-    //     if (current.role === ChatRole.CREATOR) {
-    //         // требуется transferOwnerToUserId
-    //         if (!data.transferOwnerToUserId) {
-    //             throw new ApiError(400, error.TRANSFER_OWNER_REQUIRED); // [memory:2]
-    //         }
-    //         await chatRepository.transferOwnershipAndLeave({
-    //             chatId,
-    //             currentOwnerId: data.userId,
-    //             newOwnerUserId: data.transferOwnerToUserId
-    //         }); // [memory:2]
-    //         return;
-    //     }
-    //
-    //     // ADMIN/MEMBER — обычный выход
-    //     await chatRepository.leaveGroupMember({
-    //         chatId,
-    //         userId: data.userId
-    //     }); // [memory:2]
-    //     return;
-    // }
+    if (!changed) {
+        await chatRepository.touchLastActivity(chatDb._id);
+        return;
+    }
 
+    const activeCount = await chatMembersRepository.countActiveMembers(chatDb._id);
+
+    if (activeCount === 0) {
+        await chatRepository.deleteChatHard(chatDb._id);
+        await chatMembersRepository.deleteAllMembersByChatId(chatDb._id);
+        return;
+    }
+
+    await chatRepository.touchLastActivity(chatDb._id);
 }
 
 export const directChatService = {

@@ -12,8 +12,8 @@ directChatRouter.post(
     catchAsync(directChatController.createDirectChat)
 );
 
-directChatRouter.delete(
-    "/:chatId",
+directChatRouter.post(
+    "/:chatId/leave",
     accessTokenValidation,
     catchAsync(directChatController.leaveDirectChat)
 )

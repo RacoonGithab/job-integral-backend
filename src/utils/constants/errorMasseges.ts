@@ -19,5 +19,7 @@ export const error = {
     NOT_ENOUGH_USERS: "Group chat must have at least 2 members",
     CHAT_NOT_FOUND: "The chat does not exist",
     CHAT_ALREADY_DELETED: "Chat has already been deleted",
+    WRONG_CHAT_TYPE: "Wrong type",
     CHAT_ARCHIVED: "The chat is already archived",
+    TRANSFER_OWNER_REQUIRED: "The creator can't just leave - a transfer of rights is required"
 }

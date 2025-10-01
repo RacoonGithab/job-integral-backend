@@ -1,7 +1,6 @@
 import {ChatModel} from "../database/schemas/chat.schema";
 import {
     ChatBaseDTO,
-    createPrivateChatRepoDto,
     existingChatRepoDto,
     findChatForUserRepoDto,
     listChatsUserRepoDto
@@ -176,9 +175,22 @@ export const findChatForUser = async (data: findChatForUserRepoDto): Promise<Cha
     };
 };
 
+const touchLastActivity = async (chatId: Types.ObjectId): Promise<void> => {
+    await ChatModel.updateOne(
+        { _id: chatId },
+        { $set: { 'stats.lastActivityAt': new Date() } }
+    );
+}
+
+const deleteChatHard = async (chatId: Types.ObjectId): Promise<void> => {
+    await ChatModel.deleteOne({ _id: chatId });
+}
+
 
 export const chatRepository = {
     findPrivateChatBetweenUsers,
     findListChatsByUserId,
-    findChatForUser
+    findChatForUser,
+    touchLastActivity,
+    deleteChatHard,
 }

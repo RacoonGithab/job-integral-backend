@@ -3,6 +3,7 @@ import {IChat} from "../../../modules/chat/database/types/chat.types";
 import {IChatMember} from "../../../modules/chat/database/types/chatMember.types";
 import {IMessage} from "../../../modules/chat/database/types/message.types";
 import {Types} from "mongoose";
+import {ChatRole} from "../../../modules/chat/database/enums/chatMember.enums";
 
 export interface createPrivateChatRepoDto {
     createdBy: string;
@@ -54,4 +55,38 @@ export interface ChatFullResult {
         messages: IMessage[];
         currentUserInfo: IChatMember;
     };
+}
+
+export interface leaveGroupChatRepoDto {
+    chatId: Types.ObjectId;
+    userId: string;
+    currentUserRole: ChatRole;
+    transferOwnerToUserId?: string;
+}
+
+export interface findActiveMemberRepoDto{
+    userId: string,
+    chatId: string
+}
+
+export interface promoteToChatCreatorRepoDto {
+    chatId: Types.ObjectId,
+    userId: string
+}
+
+export interface softLeaveMemberRepoDto {
+    chatId: Types.ObjectId;
+    userId: string
+}
+
+export interface deleteMemberRepoDto {
+    chatId: Types.ObjectId;
+    userId: string
+}
+
+export interface transferTitleRepoDto {
+    userId: string;
+    chatId: string;
+    currentOwnerId: string;
+    newOwnerUserId: string;
 }

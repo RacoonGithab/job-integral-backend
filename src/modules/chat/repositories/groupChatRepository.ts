@@ -1,7 +1,10 @@
-import {createGroupChatRepoDto} from "../../../types/dto/chat-DTO/chatRepoDto";
+import {
+    createGroupChatRepoDto
+} from "../../../types/dto/chat-DTO/chatRepoDto";
 import {IChat} from "../database/types/chat.types";
 import {ChatModel} from "../database/schemas/chat.schema";
 import {ChatStatus, ChatType} from "../database/enums/chat.enums";
+import {Types} from "mongoose";
 
 const createGroupChat = async (data: createGroupChatRepoDto): Promise<IChat> => {
     const chatDoc = new ChatModel({
@@ -28,6 +31,14 @@ const createGroupChat = async (data: createGroupChatRepoDto): Promise<IChat> => 
     return await chatDoc.save();
 };
 
+const updateChatStats = async (chatId: Types.ObjectId, memberCount: number) => {
+    ChatModel.updateOne(
+        { _id: chatId },
+        { $set: { 'stats.memberCount': memberCount, 'stats.lastActivityAt': new Date() } }
+    )
+};
+
 export const groupChatRepository = {
     createGroupChat,
+    updateChatStats
 }

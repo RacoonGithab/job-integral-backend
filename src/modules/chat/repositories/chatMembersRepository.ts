@@ -3,6 +3,12 @@ import {createChatMemberDto, isUserMemberOfChatDto} from "../../../types/dto/mem
 import {ChatMemberModel} from "../database/schemas/chatMember.schema";
 import {IChatMember} from "../database/types/chatMember.types";
 import {ChatRole} from "../database/enums/chatMember.enums";
+import {
+    deleteMemberRepoDto,
+    findActiveMemberRepoDto,
+    promoteToChatCreatorRepoDto,
+    softLeaveMemberRepoDto
+} from "../../../types/dto/chat-DTO/chatRepoDto";
 
 const createChatMembersByIds = async (members: createChatMemberDto[]): Promise<IChatMember[]> => {
     const membersData = members.map(member => ({
@@ -31,6 +37,21 @@ const createChatMembersByIds = async (members: createChatMemberDto[]): Promise<I
 };
 
 
+const findActiveMember= async (data: findActiveMemberRepoDto): Promise<IChatMember | null> => {
+    return ChatMemberModel.findOne({
+        chatId: data.chatId,
+        userId: data.userId,
+        isActive: true
+    });
+}
+
+const promoteToChatCreator = async (data: promoteToChatCreatorRepoDto): Promise<void> => {
+    await ChatMemberModel.updateOne({
+        chatId: data.chatId, userId: data.userId, isActive: true},
+        { $set: { role: ChatRole.CREATOR }
+    })
+}
+
 const isMemberUserChatById = async (data: isUserMemberOfChatDto): Promise<boolean> => {
     const chatObjectId = new Types.ObjectId(data.chatId);
 
@@ -42,9 +63,9 @@ const isMemberUserChatById = async (data: isUserMemberOfChatDto): Promise<boolea
     return !!member;
 };
 
-const softLeaveMember = async (params: { chatId: Types.ObjectId; userId: string }): Promise<boolean> => {
+const softLeaveMember = async (data: softLeaveMemberRepoDto): Promise<boolean> => {
     const res = await ChatMemberModel.updateOne(
-        { chatId: params.chatId, userId: params.userId, isActive: true },
+        { chatId: data.chatId, userId: data.userId, isActive: true },
         { $set: { isActive: false, leftAt: new Date(), userDeleted: true } }
     );
 
@@ -56,8 +77,13 @@ const countActiveMembers = async (chatId: Types.ObjectId): Promise<number> => {
 }
 
 
-const deleteAllByChatId = async (chatId: Types.ObjectId): Promise<void> => {
+const deleteAllMembersByChatId = async (chatId: Types.ObjectId): Promise<void> => {
     await ChatMemberModel.deleteMany({ chatId });
+}
+
+const deleteMember = async (data: deleteMemberRepoDto): Promise<boolean> => {
+    const res = await ChatMemberModel.deleteOne({ chatId: data.chatId, userId: data.userId });
+    return res.deletedCount > 0;
 }
 
 export const chatMembersRepository = {
@@ -65,5 +91,8 @@ export const chatMembersRepository = {
     createChatMembersByIds,
     softLeaveMember,
     countActiveMembers,
-    deleteAllByChatId
+    deleteAllMembersByChatId,
+    deleteMember,
+    findActiveMember,
+    promoteToChatCreator
 }

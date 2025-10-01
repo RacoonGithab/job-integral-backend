@@ -1,4 +1,4 @@
-export interface createChatDto {
+export interface createDirectChatDto {
     userId: string;
     otherUserId: string;
 }
@@ -26,7 +26,18 @@ export interface createGroupChatDto {
     memberIds: string[];
 }
 
-export interface deleteChatDto {
+export interface leaveDirectChatDto {
+    userId: string;
+    chatId: string;
+}
+
+export interface leaveGroupChatDto {
+    userId: string;
+    chatId: string;
+    transferOwnerToUserId?: string;
+}
+
+export interface deleteGroupChatDto {
     userId: string;
     chatId: string;
 }
