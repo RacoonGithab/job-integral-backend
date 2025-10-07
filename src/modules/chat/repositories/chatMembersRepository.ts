@@ -1,14 +1,17 @@
 import { Types } from "mongoose";
-import {createChatMemberDto, isUserMemberOfChatDto} from "../../../types/dto/members-chat-DTO/membersChatDtoRepo";
+import {
+    createChatMemberDto,
+    deleteMemberRepoDto,
+    findActiveMemberRepoDto,
+    incrementUnreadCountRepoDto,
+    isUserMemberOfChatDto,
+    promoteToChatCreatorRepoDto,
+    softLeaveMemberRepoDto,
+    updateLastSeenRepoDto
+} from "../../../types/dto/members-chat-DTO/membersChatDtoRepo";
 import {ChatMemberModel} from "../database/schemas/chatMember.schema";
 import {IChatMember} from "../database/types/chatMember.types";
 import {ChatRole} from "../database/enums/chatMember.enums";
-import {
-    deleteMemberRepoDto,
-    findActiveMemberRepoDto,
-    promoteToChatCreatorRepoDto,
-    softLeaveMemberRepoDto
-} from "../../../types/dto/chat-DTO/chatRepoDto";
 
 const createChatMembersByIds = async (members: createChatMemberDto[]): Promise<IChatMember[]> => {
     const membersData = members.map(member => ({
@@ -76,6 +79,39 @@ const countActiveMembers = async (chatId: Types.ObjectId): Promise<number> => {
     return ChatMemberModel.countDocuments({ chatId, isActive: true });
 }
 
+const incrementUnreadCount = async (data: incrementUnreadCountRepoDto): Promise<void> => {
+    const chatObjectId = typeof data.chatId === "string" ? new Types.ObjectId(data.chatId) : data.chatId;
+
+    await ChatMemberModel.updateMany(
+        {
+            chatId: chatObjectId,
+            userId: { $ne: data.excludeUserId },
+            isActive: true
+        },
+        {
+            $inc: { unreadCount: 1 }
+        }
+    );
+};
+
+const updateLastSeen = async (data: updateLastSeenRepoDto): Promise<void> => {
+    const chatObjectId = typeof data.chatId === "string" ? new Types.ObjectId(data.chatId) : data.chatId;
+
+    await ChatMemberModel.updateOne(
+        {
+            chatId: chatObjectId,
+            userId: data.userId,
+            isActive: true
+        },
+        {
+            $set: {
+                lastSeenAt: new Date(),
+                unreadCount: 0
+            }
+        }
+    );
+};
+
 
 const deleteAllMembersByChatId = async (chatId: Types.ObjectId): Promise<void> => {
     await ChatMemberModel.deleteMany({ chatId });
@@ -93,6 +129,8 @@ export const chatMembersRepository = {
     countActiveMembers,
     deleteAllMembersByChatId,
     deleteMember,
+    updateLastSeen,
+    incrementUnreadCount,
     findActiveMember,
     promoteToChatCreator
 }

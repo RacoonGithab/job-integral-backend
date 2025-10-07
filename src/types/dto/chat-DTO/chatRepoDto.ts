@@ -4,6 +4,7 @@ import {IChatMember} from "../../../modules/chat/database/types/chatMember.types
 import {IMessage} from "../../../modules/chat/database/types/message.types";
 import {Types} from "mongoose";
 import {ChatRole} from "../../../modules/chat/database/enums/chatMember.enums";
+import {MessageType} from "../../../modules/chat/database/enums/message.enums";
 
 export interface createPrivateChatRepoDto {
     createdBy: string;
@@ -29,6 +30,19 @@ export interface createGroupChatRepoDto {
     description?: string;
     createdBy: string;
     memberCount: number;
+}
+
+export interface updateChatAfterMessageRepoDto {
+    chatId: string | Types.ObjectId;
+    lastMessage: {
+        _id: string | Types.ObjectId;
+        senderId: string;
+        senderName: string;
+        senderAvatar?: string;
+        text: string;
+        timestamp: Date;
+        type: MessageType;
+    };
 }
 
 export interface ChatBaseDTO {
@@ -62,31 +76,4 @@ export interface leaveGroupChatRepoDto {
     userId: string;
     currentUserRole: ChatRole;
     transferOwnerToUserId?: string;
-}
-
-export interface findActiveMemberRepoDto{
-    userId: string,
-    chatId: string
-}
-
-export interface promoteToChatCreatorRepoDto {
-    chatId: Types.ObjectId,
-    userId: string
-}
-
-export interface softLeaveMemberRepoDto {
-    chatId: Types.ObjectId;
-    userId: string
-}
-
-export interface deleteMemberRepoDto {
-    chatId: Types.ObjectId;
-    userId: string
-}
-
-export interface transferTitleRepoDto {
-    userId: string;
-    chatId: string;
-    currentOwnerId: string;
-    newOwnerUserId: string;
 }

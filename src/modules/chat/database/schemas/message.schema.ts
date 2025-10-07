@@ -16,10 +16,10 @@ const messageSchema = new Schema<IMessage>(
         },
 
         senderInfo: {
-            username: {type: String},
-            displayName: {type: String},
+            username: {type: String, required: true},
+            displayName: {type: String, required: true},
             avatarUrl: {type: String},
-            lastSyncAt: {type: Date},
+            lastSyncAt: {type: Date, default: Date.now()},
         },
 
         content: {
@@ -60,8 +60,9 @@ const messageSchema = new Schema<IMessage>(
         datePartition: {
             type: String,
             required: true,
-            default: function() {
-                return new Date().toISOString().slice(0, 7);
+            default: function () {
+                const t = this.timestamp || new Date();
+                return t.toISOString().slice(0, 7);
             }
         },
 

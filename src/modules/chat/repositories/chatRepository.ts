@@ -3,7 +3,7 @@ import {
     ChatBaseDTO,
     existingChatRepoDto,
     findChatForUserRepoDto,
-    listChatsUserRepoDto
+    listChatsUserRepoDto, updateChatAfterMessageRepoDto
 } from "../../../types/dto/chat-DTO/chatRepoDto";
 import {Types} from "mongoose";
 import {ChatMemberModel} from "../database/schemas/chatMember.schema";
@@ -175,6 +175,21 @@ export const findChatForUser = async (data: findChatForUserRepoDto): Promise<Cha
     };
 };
 
+const updateChatAfterMessage = async (data: updateChatAfterMessageRepoDto): Promise<void> => {
+    const chatId = typeof data.chatId === 'string' ? new Types.ObjectId(data.chatId) : data.chatId;
+
+    await ChatModel.updateOne(
+        { _id: chatId },
+        {
+            $set: {
+                lastMessage: data.lastMessage,
+                'stats.lastActivityAt': data.lastMessage.timestamp
+            }
+        }
+    );
+};
+
+
 const touchLastActivity = async (chatId: Types.ObjectId): Promise<void> => {
     await ChatModel.updateOne(
         { _id: chatId },
@@ -191,6 +206,7 @@ export const chatRepository = {
     findPrivateChatBetweenUsers,
     findListChatsByUserId,
     findChatForUser,
+    updateChatAfterMessage,
     touchLastActivity,
     deleteChatHard,
 }

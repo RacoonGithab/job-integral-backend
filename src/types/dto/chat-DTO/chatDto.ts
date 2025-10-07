@@ -12,13 +12,6 @@ export interface getUserChatDto {
     chatId: string;
 }
 
-export interface sendMessageDto {
-    text: string;
-    senderId: string;
-    chatId: string;
-}
-
-
 export interface createGroupChatDto {
     userId: string;
     chatName: string;
