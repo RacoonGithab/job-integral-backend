@@ -22,3 +22,28 @@ export interface createMessageRepoDto {
     };
     timestamp: Date;
 }
+
+
+export interface updateMessageRepoDto {
+    messageId: string;
+    chatId: string;
+    senderId: string;
+    senderInfo?: {
+        username?: string;
+        displayName?: string;
+        avatarUrl?: string | null;
+    };
+    content?: {
+        type: MessageType;
+        text?: string;
+        attachments?: MessageAttachment[];
+        replyTo?: {
+            messageId: string;
+            text: string;
+            senderName: string;
+        };
+    };
+    timestamp?: Date;
+    isEdited?: boolean;
+    editedAt?: Date;
+}

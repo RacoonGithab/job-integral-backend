@@ -5,6 +5,7 @@ export const error = {
     FORBIDDEN: "Access is denied",
     BAD_REQUEST: "Bad request",
     INTERNAL_SERVER_ERROR: "Internal server error",
+    SERVER_ERROR: "Server error",
 
     // users errors
     USER_NOT_FOUND:  "User not found",
@@ -40,4 +41,5 @@ export const error = {
     MAX_TEXT_LEN: "Text is too long (max 4096 characters)",
     INVESTMENT_REQUIRED: "Attachments are required for IMAGE message",
     MESSAGE_NOT_FOUND: "The message was not found.",
+    EDIT_WINDOW_EXPIRED: "Post edit period has expired",
 }

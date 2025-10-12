@@ -21,3 +21,12 @@ export interface MessageAttachment {
     size: number;
     mimeType: string;
 }
+
+export interface updateMessageDto {
+    chatId: string;
+    messageId: string;
+    senderId: string;
+    text?: string;
+    attachments?: MessageAttachment[];
+    type: MessageType;
+}

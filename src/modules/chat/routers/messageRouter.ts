@@ -9,6 +9,12 @@ messageRouter.post(
     "/",
     accessTokenValidation,
     catchAsync(messageController.sendMessage)
+);
+
+messageRouter.patch(
+    "/",
+    accessTokenValidation,
+    catchAsync(messageController.updateMessage)
 )
 
 export default messageRouter;
