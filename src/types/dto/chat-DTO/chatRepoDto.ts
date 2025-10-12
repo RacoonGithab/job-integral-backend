@@ -21,7 +21,7 @@ export interface listChatsUserRepoDto {
 
 export interface findChatForUserRepoDto {
     userId: string;
-    chatId: string;
+    chatId: string | Types.ObjectId;
     requireActive?: boolean;
 }
 

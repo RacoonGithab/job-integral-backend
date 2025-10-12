@@ -1,5 +1,9 @@
 import { MessageModel } from "../database/schemas/message.schema";
-import {createMessageRepoDto, updateMessageRepoDto} from "../../../types/dto/message-DTO/messageRepoDto";
+import {
+    createMessageRepoDto, getMessagesRepoDto,
+    messageQuery,
+    updateMessageRepoDto
+} from "../../../types/dto/message-DTO/messageRepoDto";
 import {IMessage} from "../database/types/message.types";
 import {Types} from "mongoose";
 
@@ -33,9 +37,41 @@ const updateMessageById = async (data: updateMessageRepoDto): Promise<IMessage |
     );
 };
 
+const getMessagesByChatId = async (
+    data: getMessagesRepoDto
+): Promise<IMessage[]> => {
+    const { chatId, limit = 50, beforeMessageId } = data;
+
+    const query: Record<string, any> = {
+        chatId: new Types.ObjectId(chatId),
+        isDeleted: false,
+    };
+
+    if (beforeMessageId) {
+        const beforeMessage = await MessageModel.findById(beforeMessageId).select('timestamp');
+        if (beforeMessage) {
+            query.timestamp = { $lt: beforeMessage.timestamp };
+        }
+    }
+
+    const messagesDesc = await MessageModel
+        .find(query)
+        .sort({ timestamp: -1 })
+        .limit(limit)
+        .lean();
+
+    const messages: IMessage[] = messagesDesc.reverse().map(msg => ({
+        ...msg,
+        readBy: new Map(Object.entries(msg.readBy || {})),
+    }));
+
+    return messages;
+};
+
 
 export const messageRepository = {
     createMessage,
     findMessageById,
-    updateMessageById
+    updateMessageById,
+    getMessagesByChatId
 }

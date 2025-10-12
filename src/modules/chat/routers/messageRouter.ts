@@ -17,4 +17,10 @@ messageRouter.patch(
     catchAsync(messageController.updateMessage)
 )
 
+messageRouter.get(
+    "/",
+    accessTokenValidation,
+    catchAsync(messageController.getChatMessages)
+)
+
 export default messageRouter;

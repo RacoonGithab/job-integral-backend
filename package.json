@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "db:seed": "ts-node seed/seed.ts",
-    "generate-hash": "ts-node tests/passwordBcryptHash.ts"
+    "generate-hash": "ts-node tests/passwordBcryptHash.ts",
+    "db:seed-messages": "ts-node tests/seedMessages.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
@@ -25,6 +26,7 @@
     "zod": "^3.25.73"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",

@@ -1,4 +1,5 @@
 import {MessageType} from "../../../modules/chat/database/enums/message.enums";
+import {IMessage} from "../../../modules/chat/database/types/message.types";
 
 export interface sendMessageDto {
     chatId: string;
@@ -29,4 +30,15 @@ export interface updateMessageDto {
     text?: string;
     attachments?: MessageAttachment[];
     type: MessageType;
+}
+
+export interface getMessagesResult {
+    messages: IMessage[];
+    hasMore: boolean;
+}
+
+export interface getChatMessagesDto {
+    chatId: string,
+    userId: string,
+    lastMessageId: string
 }

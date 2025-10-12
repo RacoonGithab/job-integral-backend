@@ -4,7 +4,12 @@ import {error} from "../../../utils/constants/errorMasseges";
 import {chatMembersRepository} from "../repositories/chatMembersRepository";
 import {messageRepository} from "../repositories/messageRepository";
 import {IMessage} from "../database/types/message.types";
-import {sendMessageDto, updateMessageDto} from "../../../types/dto/message-DTO/messageDto";
+import {
+    getChatMessagesDto,
+    getMessagesResult,
+    sendMessageDto,
+    updateMessageDto
+} from "../../../types/dto/message-DTO/messageDto";
 import {userProfileRepository} from "../../user-profile/repositories/userProfileRepository";
 import {messageServiceValidate} from "./validators/messageValidator";
 import {directChatRepository} from "../repositories/directChatRepository";
@@ -164,10 +169,47 @@ const updateMessage = async (data: updateMessageDto): Promise<IMessage> => {
     await messageServiceValidate.updateChatAfterMessage(data.chatId, updatedMessage);
 
     return updatedMessage;
-
 }
+
+const getChatMessages = async (data: getChatMessagesDto): Promise<getMessagesResult> => {
+
+    const userDb = await userRepository.getUserById(data.userId);
+
+    if (!userDb) {
+        throw new ApiError(404, error.USER_NOT_FOUND);
+    }
+
+    if (userDb.isBlocked) {
+        throw new ApiError(403, error.USER_BLOCKED);
+    }
+
+    const isMember = await chatMembersRepository.isMemberUserChatById({
+        userId: data.userId,
+        chatId: data.chatId,
+    });
+
+    if (!isMember) {
+        throw new ApiError(403, error.FORBIDDEN);
+    }
+
+
+    const messages = await messageRepository.getMessagesByChatId({
+        chatId: data.chatId,
+        beforeMessageId: data.lastMessageId,
+        limit: messageConstants.NUMBER_OF_MESSAGES + 1
+    });
+
+    const hasMore = messages.length > messageConstants.NUMBER_OF_MESSAGES;
+
+    if (hasMore) {
+        messages.pop();
+    }
+
+    return { messages, hasMore };
+};
 
 export const messageService = {
     sendMessage,
-    updateMessage
+    updateMessage,
+    getChatMessages
 }

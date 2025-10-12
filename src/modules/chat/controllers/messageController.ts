@@ -37,7 +37,23 @@ const updateMessage = async (req: Request, res: Response) => {
     res.status(200).json({updateMessage});
 }
 
+
+const getChatMessages = async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    const userId = req.body.userId;
+    const lastMessageId = req.body.lastMessageId;
+
+    const { messages, hasMore } = await messageService.getChatMessages({
+        chatId,
+        userId,
+        lastMessageId
+    });
+
+    res.status(200).json({ messages, hasMore });
+}
+
 export const messageController = {
     sendMessage,
-    updateMessage
+    updateMessage,
+    getChatMessages
 }

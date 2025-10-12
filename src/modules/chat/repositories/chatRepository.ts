@@ -110,51 +110,57 @@ const findListChatsByUserId = async (data: listChatsUserRepoDto): Promise<IChat[
 
 
 
-export const findChatForUser = async (data: findChatForUserRepoDto): Promise<ChatBaseDTO | null> => {
-    const chatId = new Types.ObjectId(data.chatId);
+export const findChatForUser = async (
+    data: findChatForUserRepoDto
+): Promise<ChatBaseDTO | null> => {
     const requireActive = data.requireActive ?? true;
 
     const chat = await ChatModel.findOne({
-        _id: chatId,
+        _id: data.chatId,
         status: { $ne: ChatStatus.DELETED }
     }).lean();
 
-    if (!chat) {
-        return null;
-    }
+    if (!chat) return null;
 
     const currentUserMembership = await ChatMemberModel.findOne({
-        chatId,
+        chatId: data.chatId,
         userId: data.userId
     }).lean() as IChatMember | null;
 
-    if (!currentUserMembership) {
-        return null;
-    }
-
-
-    if (requireActive && !currentUserMembership.isActive) {
-        return null;
-    }
+    if (!currentUserMembership) return null;
+    if (requireActive && !currentUserMembership.isActive) return null;
 
     const members = await ChatMemberModel.find({
-        chatId,
+        chatId: data.chatId,
         isActive: true
     })
         .select('userId role userInfo settings joinedAt lastSeenAt unreadCount')
         .lean() as IChatMember[];
 
     const recentMessagesDesc = await MessageModel.find({
-        chatId,
+        chatId: data.chatId,
         isDeleted: false
     })
         .sort({ timestamp: -1 })
         .limit(50)
         .select('senderId senderInfo content timestamp status isEdited reactions');
 
-    const messages = recentMessagesDesc
-        .map(d => d.toObject() as IMessage)
-        .reverse();
+    const messages = recentMessagesDesc.map(d => d.toObject() as IMessage).reverse();
+
+    const lastMessageRaw = recentMessagesDesc[0]?.toObject() as IMessage | undefined;
+
+
+    const lastMessage = lastMessageRaw
+        ? {
+            _id: new Types.ObjectId(lastMessageRaw._id as string),
+            senderId: lastMessageRaw.senderId,
+            senderName: lastMessageRaw.senderInfo.displayName,
+            senderAvatar: lastMessageRaw.senderInfo.avatarUrl,
+            text: lastMessageRaw.content.text || '',
+            timestamp: lastMessageRaw.timestamp,
+            type: lastMessageRaw.content.type,
+        }
+        : undefined;
 
     return {
         _id: chat._id,
@@ -168,7 +174,7 @@ export const findChatForUser = async (data: findChatForUserRepoDto): Promise<Cha
         updatedAt: chat.updatedAt,
         settings: chat.settings,
         stats: chat.stats,
-        lastMessage: chat.lastMessage,
+        lastMessage,
         members,
         messages,
         currentUserInfo: currentUserMembership
