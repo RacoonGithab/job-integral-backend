@@ -52,8 +52,18 @@ const getChatMessages = async (req: Request, res: Response) => {
     res.status(200).json({ messages, hasMore });
 }
 
+const deleteMessage = async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    const messageId = req.body.messageId;
+    const userId = req.body.userId;
+
+    await messageService.deleteMessage({chatId, userId, messageId});
+    res.status(204).json({});
+}
+
 export const messageController = {
     sendMessage,
     updateMessage,
-    getChatMessages
+    getChatMessages,
+    deleteMessage
 }

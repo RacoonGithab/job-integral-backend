@@ -42,3 +42,9 @@ export interface getChatMessagesDto {
     userId: string,
     lastMessageId: string
 }
+
+export interface deleteMessageDto {
+    chatId: string;
+    messageId: string;
+    userId: string;
+}

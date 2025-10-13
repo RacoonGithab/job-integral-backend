@@ -1,11 +1,13 @@
 import { MessageModel } from "../database/schemas/message.schema";
 import {
-    createMessageRepoDto, getMessagesRepoDto,
-    messageQuery,
+    createMessageRepoDto,
+    deleteMessageByIdRepoDto,
+    getMessagesRepoDto,
     updateMessageRepoDto
 } from "../../../types/dto/message-DTO/messageRepoDto";
 import {IMessage} from "../database/types/message.types";
 import {Types} from "mongoose";
+import {as} from "@faker-js/faker/dist/airline-CHFQMWko";
 
 const createMessage = async (data: createMessageRepoDto): Promise<IMessage> => {
     return new MessageModel({
@@ -68,10 +70,18 @@ const getMessagesByChatId = async (
     return messages;
 };
 
+const deleteMessageById = async (data: deleteMessageByIdRepoDto): Promise<void> => {
+    await MessageModel.deleteOne({
+        _id: new Types.ObjectId(data.messageId),
+        chatId: new Types.ObjectId(data.chatId)
+    });
+};
+
 
 export const messageRepository = {
     createMessage,
     findMessageById,
     updateMessageById,
-    getMessagesByChatId
+    getMessagesByChatId,
+    deleteMessageById
 }

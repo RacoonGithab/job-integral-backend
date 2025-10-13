@@ -5,6 +5,7 @@ import {chatMembersRepository} from "../repositories/chatMembersRepository";
 import {messageRepository} from "../repositories/messageRepository";
 import {IMessage} from "../database/types/message.types";
 import {
+    deleteMessageDto,
     getChatMessagesDto,
     getMessagesResult,
     sendMessageDto,
@@ -208,8 +209,45 @@ const getChatMessages = async (data: getChatMessagesDto): Promise<getMessagesRes
     return { messages, hasMore };
 };
 
+const deleteMessage = async (data: deleteMessageDto): Promise<void> => {
+    const userDb = await userRepository.getUserById(data.userId);
+
+    if (!userDb) {
+        throw new ApiError(404, error.USER_NOT_FOUND);
+    }
+
+    if (userDb.isBlocked) {
+        throw new ApiError(403, error.USER_BLOCKED);
+    }
+
+    const isMember = await chatMembersRepository.isMemberUserChatById({
+        userId: data.userId,
+        chatId: data.chatId,
+    });
+
+    if (!isMember) {
+        throw new ApiError(403, error.FORBIDDEN);
+    }
+
+    const messageDb = await messageRepository.findMessageById(data.messageId);
+
+    if (!messageDb) {
+        throw new ApiError(404, error.USER_NOT_FOUND);
+    }
+
+    if (messageDb.senderId !== data.userId) {
+        throw new ApiError(403, error.FORBIDDEN);
+    }
+
+    await messageRepository.deleteMessageById({
+        chatId: data.chatId,
+        messageId: data.messageId,
+    })
+}
+
 export const messageService = {
     sendMessage,
     updateMessage,
-    getChatMessages
+    getChatMessages,
+    deleteMessage
 }

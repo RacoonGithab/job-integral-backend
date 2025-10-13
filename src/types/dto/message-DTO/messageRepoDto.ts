@@ -1,7 +1,5 @@
-import { Types } from "mongoose";
 import { MessageType } from "../../../modules/chat/database/enums/message.enums";
 import {MessageAttachment} from "./messageDto";
-import {IMessage} from "../../../modules/chat/database/types/message.types";
 
 export interface createMessageRepoDto {
     chatId: string;
@@ -50,14 +48,13 @@ export interface updateMessageRepoDto {
     editedAt?: Date;
 }
 
-export interface messageQuery {
-    chatId: Types.ObjectId;
-    isDeleted: boolean;
-    timestamp?: { $lt: Date };
-}
-
 export interface getMessagesRepoDto {
     chatId: string;
     limit?: number;
     beforeMessageId?: string;
+}
+
+export interface deleteMessageByIdRepoDto {
+    chatId: string;
+    messageId: string;
 }

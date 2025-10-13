@@ -11,16 +11,22 @@ messageRouter.post(
     catchAsync(messageController.sendMessage)
 );
 
-messageRouter.patch(
-    "/",
-    accessTokenValidation,
-    catchAsync(messageController.updateMessage)
-)
-
 messageRouter.get(
     "/",
     accessTokenValidation,
     catchAsync(messageController.getChatMessages)
-)
+);
+
+messageRouter.patch(
+    "/",
+    accessTokenValidation,
+    catchAsync(messageController.updateMessage)
+);
+
+messageRouter.delete(
+    "/",
+    accessTokenValidation,
+    catchAsync(messageController.deleteMessage)
+);
 
 export default messageRouter;
