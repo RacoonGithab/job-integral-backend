@@ -48,6 +48,13 @@ const findActiveMember= async (data: findActiveMemberRepoDto): Promise<IChatMemb
     });
 }
 
+const findActiveMembersByChatId = async (chatId: string | Types.ObjectId): Promise<IChatMember[]> => {
+    return ChatMemberModel.find({
+        chatId,
+        isActive: true
+    }).sort({ joinedAt: 1 });
+};
+
 const promoteToChatCreator = async (data: promoteToChatCreatorRepoDto): Promise<void> => {
     await ChatMemberModel.updateOne({
         chatId: data.chatId, userId: data.userId, isActive: true},
@@ -61,6 +68,7 @@ const isMemberUserChatById = async (data: isUserMemberOfChatDto): Promise<boolea
     const member: IChatMember | null = await ChatMemberModel.findOne({
         userId: data.userId,
         chatId: chatObjectId,
+        isActive: true
     }).select("_id");
 
     return !!member;
@@ -132,5 +140,6 @@ export const chatMembersRepository = {
     updateLastSeen,
     incrementUnreadCount,
     findActiveMember,
+    findActiveMembersByChatId,
     promoteToChatCreator
 }

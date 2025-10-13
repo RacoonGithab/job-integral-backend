@@ -3,6 +3,7 @@ import {accessTokenValidation} from "../../../middlewares/accessTokenValidation"
 import {catchAsync} from "../../../middlewares/catchAsync";
 import {groupChatController} from "../controllers/groupChatController";
 import messageRouter from "./messageRouter";
+import chatMembersRouter from "./chatMembersRouter";
 
 const groupChatRouter = express.Router();
 
@@ -28,5 +29,10 @@ groupChatRouter.use(
     "/:chatId/message",
     messageRouter
 )
+
+groupChatRouter.use(
+    "/:chatId/members",
+    chatMembersRouter
+);
 
 export default groupChatRouter;
