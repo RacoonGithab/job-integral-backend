@@ -5,6 +5,12 @@ import {chatMembersController} from "../controllers/chatMembersController";
 
 const chatMembersRouter = express.Router({ mergeParams: true });
 
+chatMembersRouter.post(
+    "/",
+    accessTokenValidation,
+    catchAsync(chatMembersController.addChatMember)
+);
+
 chatMembersRouter.get(
     "/",
     accessTokenValidation,

@@ -11,6 +11,7 @@ export const error = {
     USER_NOT_FOUND:  "User not found",
     USER_BLOCKED:  "User blocked",
     EMAIL_NOT_VERIFIED:  "Email not verified",
+    NOT_PROFILE:"user does not have a profile",
 
     // Unauthorized errors
     INCORRECT_PASSWORD: "Password must be a valid password",
@@ -35,6 +36,8 @@ export const error = {
     CHAT_ARCHIVED: "The chat is already archived",
     TRANSFER_OWNER_REQUIRED: "The creator can't just leave - a transfer of rights is required",
     REPLY_DIFFERENT_CHAT: "Reply DIFFERENT_CHAT",
+    USER_ALREADY_MEMBER: "User already exists",
+    CHAT_MEMBERS_LIMIT_REACHED: "Chat member is reactable",
 
     // message errors
     TEXT_REQUIRED: "Text is required for TEXT message",

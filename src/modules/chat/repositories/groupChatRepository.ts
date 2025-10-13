@@ -38,7 +38,33 @@ const updateChatStats = async (chatId: Types.ObjectId, memberCount: number) => {
     )
 };
 
+const incrementMemberCount = async (chatId: string | Types.ObjectId): Promise<void> => {
+    const chatObjectId = typeof chatId === "string" ? new Types.ObjectId(chatId) : chatId;
+
+    await ChatModel.updateOne(
+        { _id: chatObjectId },
+        {
+            $inc: { 'stats.memberCount': 1 },
+            $set: { 'stats.lastActivityAt': new Date() }
+        }
+    );
+};
+
+const decrementMemberCount = async (chatId: string | Types.ObjectId): Promise<void> => {
+    const chatObjectId = typeof chatId === "string" ? new Types.ObjectId(chatId) : chatId;
+
+    await ChatModel.updateOne(
+        { _id: chatObjectId },
+        {
+            $inc: { 'stats.memberCount': -1 },
+            $set: { 'stats.lastActivityAt': new Date() }
+        }
+    );
+};
+
 export const groupChatRepository = {
     createGroupChat,
-    updateChatStats
+    updateChatStats,
+    incrementMemberCount,
+    decrementMemberCount
 }
