@@ -17,3 +17,9 @@ export interface updateMemberRoleDto {
     targetUserId: string;
     newRole: ChatRole;
 }
+
+export interface deleteChatMemberDto {
+    chatId: string;
+    userId: string;
+    deleteUserId: string;
+}

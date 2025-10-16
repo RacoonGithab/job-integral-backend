@@ -1,6 +1,6 @@
 import {IChatMember} from "../database/types/chatMember.types";
 import {
-    addChatMemberDto,
+    addChatMemberDto, deleteChatMemberDto,
     getChatMembersDto,
     updateMemberRoleDto
 } from "../../../types/dto/members-chat-DTO/membersChatDto";
@@ -14,6 +14,7 @@ import {ChatRole} from "../database/enums/chatMember.enums";
 import { Types } from "mongoose";
 import {userProfileRepository} from "../../user-profile/repositories/userProfileRepository";
 import {groupChatRepository} from "../repositories/groupChatRepository";
+import {as} from "@faker-js/faker/dist/airline-CHFQMWko";
 
 const addChatMember = async (data: addChatMemberDto): Promise<void> => {
     const userDb = await userRepository.getUserById(data.userId);
@@ -250,8 +251,96 @@ const updateMemberRole = async (data: updateMemberRoleDto): Promise<void> => {
     });
 }
 
+const deleteChatMember = async (data: deleteChatMemberDto): Promise<void> => {
+    const userDb = await userRepository.getUserById(data.userId);
+
+    if (!userDb) {
+        throw new ApiError(404, error.USER_NOT_FOUND);
+    }
+
+    if (userDb.isBlocked) {
+        throw new ApiError(403, error.USER_BLOCKED);
+    }
+
+    const chatDb = await chatRepository.findChatForUser({
+        userId: data.userId,
+        chatId: data.chatId,
+        requireActive: false
+    });
+
+    if (!chatDb) {
+        throw new ApiError(404, error.CHAT_NOT_FOUND)
+    }
+
+    if (chatDb.status === ChatStatus.DELETED) {
+        throw new ApiError(404, error.CHAT_ALREADY_DELETED)
+    }
+
+    if (chatDb.status === ChatStatus.ARCHIVED) {
+        throw new ApiError(404, error.CHAT_ARCHIVED)
+    }
+
+    if (chatDb.type !== ChatType.GROUP) {
+        throw new ApiError(400, error.WRONG_CHAT_TYPE);
+    }
+
+    const currentMember = await chatMembersRepository.findActiveMember({
+        userId: data.userId,
+        chatId: data.chatId,
+    });
+
+    if (!currentMember) {
+        throw new ApiError(403, error.FORBIDDEN);
+    }
+
+    const targetMember = await chatMembersRepository.findActiveMember({
+        userId: data.deleteUserId,
+        chatId: data.chatId,
+    });
+
+    if (!targetMember) {
+        throw new ApiError(404, error.TARGET_USER_NOT_MEMBER);
+    }
+
+    if (data.userId === data.deleteUserId) {
+        throw new ApiError(400, error.USE_LEAVE_CHAT);
+    }
+
+    if (![ChatRole.CREATOR, ChatRole.ADMIN].includes(currentMember.role)) {
+        throw new ApiError(403, error.FORBIDDEN);
+    }
+
+    if (targetMember.role === ChatRole.CREATOR) {
+        throw new ApiError(403, error.CANNOT_DELETE_MEMBER);
+    }
+
+    if (currentMember.role === ChatRole.ADMIN && targetMember.role === ChatRole.ADMIN) {
+        throw new ApiError(403, error.CANNOT_DELETE_MEMBER);
+    }
+
+    const deleted = await chatMembersRepository.deleteMember({
+        chatId: new Types.ObjectId(data.chatId),
+        userId: data.deleteUserId
+    });
+
+    if (!deleted) {
+        throw new ApiError(500, error.INTERNAL_SERVER_ERROR);
+    }
+
+    await groupChatRepository.decrementMemberCount(data.chatId);
+
+    const memberCount = await chatMembersRepository.countActiveMembers(
+        new Types.ObjectId(data.chatId)
+    );
+
+    if (memberCount < 3) {
+        console.warn(`Chat ${data.chatId} has less than 3 members (${memberCount})`);
+    }
+}
+
 export const chatMembersService = {
     addChatMember,
     getChatMembers,
-    updateMemberRole
+    updateMemberRole,
+    deleteChatMember
 }

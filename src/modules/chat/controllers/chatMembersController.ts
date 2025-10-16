@@ -27,9 +27,18 @@ const updateMemberRole = async (req: Request, res: Response) => {
     res.status(200).json("User updated")
 }
 
+const deleteChatMember = async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    const userId = req.body.userId;
+    const { deleteUserId } = req.body;
+
+    await chatMembersService.deleteChatMember({ chatId, userId, deleteUserId });
+    res.status(204).json()
+}
 
 export const chatMembersController = {
     addChatMember,
     getChatMembers,
-    updateMemberRole
+    updateMemberRole,
+    deleteChatMember
 }

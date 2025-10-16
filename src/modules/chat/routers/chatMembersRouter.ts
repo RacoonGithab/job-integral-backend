@@ -23,4 +23,10 @@ chatMembersRouter.patch(
     catchAsync(chatMembersController.updateMemberRole)
 );
 
+chatMembersRouter.delete(
+    "/",
+    accessTokenValidation,
+    catchAsync(chatMembersController.deleteChatMember)
+);
+
 export default chatMembersRouter;

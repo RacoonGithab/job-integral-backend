@@ -45,6 +45,8 @@ export const error = {
     ADMIN_CANNOT_APPOINT_ADMIN: "ADMIN cannot assign other ADMINs (only CREATOR can)",
     INVALID_ROLE: "Invalid ROLE",
     ROLE_ALREADY_SET: "Role already exists",
+    USE_LEAVE_CHAT: "Exit the chat",
+    CANNOT_DELETE_MEMBER: "Cannot remove this member",
 
     // message errors
     TEXT_REQUIRED: "Text is required for TEXT message",
