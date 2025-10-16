@@ -58,3 +58,13 @@ export interface deleteMessageByIdRepoDto {
     chatId: string;
     messageId: string;
 }
+
+export interface markMessageReadRepoDto {
+    messageId: string;
+    userId: string
+}
+
+export interface getUnreadCountRepoDto {
+    chatId: string;
+    userId: string
+}

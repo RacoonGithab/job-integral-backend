@@ -2,12 +2,11 @@ import { MessageModel } from "../database/schemas/message.schema";
 import {
     createMessageRepoDto,
     deleteMessageByIdRepoDto,
-    getMessagesRepoDto,
+    getMessagesRepoDto, getUnreadCountRepoDto, markMessageReadRepoDto,
     updateMessageRepoDto
 } from "../../../types/dto/message-DTO/messageRepoDto";
 import {IMessage} from "../database/types/message.types";
 import {Types} from "mongoose";
-import {as} from "@faker-js/faker/dist/airline-CHFQMWko";
 
 const createMessage = async (data: createMessageRepoDto): Promise<IMessage> => {
     return new MessageModel({
@@ -70,6 +69,29 @@ const getMessagesByChatId = async (
     return messages;
 };
 
+const getUnreadCount = async (data: getUnreadCountRepoDto): Promise<number> => {
+    return MessageModel.countDocuments({
+        chatId: new Types.ObjectId(data.chatId),
+        isDeleted: false,
+        readBy: {
+            $not: { $elemMatch: { $eq: data.userId } }
+        }
+    });
+};
+
+const markMessageRead = async (data: markMessageReadRepoDto): Promise<void> => {
+    const messageObjectId = new Types.ObjectId(data.messageId);
+
+    const result = await MessageModel.updateOne(
+        { _id: messageObjectId },
+        { $set: { [`readBy.${data.userId}`]: new Date() } }
+    );
+
+    if (result.matchedCount === 0) {
+        throw new Error("Message not found");
+    }
+}
+
 const deleteMessageById = async (data: deleteMessageByIdRepoDto): Promise<void> => {
     await MessageModel.deleteOne({
         _id: new Types.ObjectId(data.messageId),
@@ -83,5 +105,7 @@ export const messageRepository = {
     findMessageById,
     updateMessageById,
     getMessagesByChatId,
-    deleteMessageById
+    markMessageRead,
+    deleteMessageById,
+    getUnreadCount
 }
