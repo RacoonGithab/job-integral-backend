@@ -38,6 +38,13 @@ export const error = {
     REPLY_DIFFERENT_CHAT: "Reply DIFFERENT_CHAT",
     USER_ALREADY_MEMBER: "User already exists",
     CHAT_MEMBERS_LIMIT_REACHED: "Chat member is reactable",
+    TARGET_USER_NOT_MEMBER: "There is no user member",
+    CANNOT_CHANGE_OWN_ROLE: "Can't change owner",
+    CANNOT_CHANGE_CREATOR_ROLE: "You can't change the CREATOR role (only one CREATOR per chat)",
+    USE_TRANSFER_OWNERSHIP: "You can assign the CREATOR role (use TransferOwnership)",
+    ADMIN_CANNOT_APPOINT_ADMIN: "ADMIN cannot assign other ADMINs (only CREATOR can)",
+    INVALID_ROLE: "Invalid ROLE",
+    ROLE_ALREADY_SET: "Role already exists",
 
     // message errors
     TEXT_REQUIRED: "Text is required for TEXT message",

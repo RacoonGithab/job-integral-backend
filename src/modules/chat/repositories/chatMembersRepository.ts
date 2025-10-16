@@ -7,7 +7,7 @@ import {
     isUserMemberOfChatDto,
     promoteToChatCreatorRepoDto,
     softLeaveMemberRepoDto,
-    updateLastSeenRepoDto
+    updateLastSeenRepoDto, updateMemberRoleRepoDto
 } from "../../../types/dto/members-chat-DTO/membersChatDtoRepo";
 import {ChatMemberModel} from "../database/schemas/chatMember.schema";
 import {IChatMember} from "../database/types/chatMember.types";
@@ -53,6 +53,19 @@ const findActiveMembersByChatId = async (chatId: string | Types.ObjectId): Promi
         chatId,
         isActive: true
     }).sort({ joinedAt: 1 });
+};
+
+const updateMemberRoleById = async (data: updateMemberRoleRepoDto): Promise<void> => {
+    await ChatMemberModel.updateOne(
+        {
+            chatId: data.chatId,
+            userId: data.userId,
+            isActive: true
+        },
+        {
+            $set: { role: data.newRole }
+        }
+    );
 };
 
 const promoteToChatCreator = async (data: promoteToChatCreatorRepoDto): Promise<void> => {
@@ -135,6 +148,7 @@ export const chatMembersRepository = {
     createChatMembersByIds,
     softLeaveMember,
     countActiveMembers,
+    updateMemberRoleById,
     deleteAllMembersByChatId,
     deleteMember,
     updateLastSeen,

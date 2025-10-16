@@ -40,6 +40,12 @@ export interface updateLastSeenRepoDto {
     userId: string
 }
 
+export interface updateMemberRoleRepoDto {
+    chatId: Types.ObjectId;
+    userId: string;
+    newRole: ChatRole;
+}
+
 
 export interface deleteMemberRepoDto {
     chatId: Types.ObjectId;

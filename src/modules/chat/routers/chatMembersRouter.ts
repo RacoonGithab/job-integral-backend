@@ -14,8 +14,13 @@ chatMembersRouter.post(
 chatMembersRouter.get(
     "/",
     accessTokenValidation,
-    catchAsync(chatMembersController.getChatMembers),
+    catchAsync(chatMembersController.getChatMembers)
 );
 
+chatMembersRouter.patch(
+    "/",
+    accessTokenValidation,
+    catchAsync(chatMembersController.updateMemberRole)
+);
 
 export default chatMembersRouter;

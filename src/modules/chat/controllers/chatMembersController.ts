@@ -18,8 +18,18 @@ const getChatMembers = async (req: Request, res: Response) => {
     res.status(200).json(chatMembers);
 }
 
+const updateMemberRole = async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    const userId = req.body.userId;
+    const { newRole, targetUserId } = req.body;
+
+    await chatMembersService.updateMemberRole({ chatId, userId, targetUserId, newRole });
+    res.status(200).json("User updated")
+}
+
 
 export const chatMembersController = {
     addChatMember,
-    getChatMembers
+    getChatMembers,
+    updateMemberRole
 }

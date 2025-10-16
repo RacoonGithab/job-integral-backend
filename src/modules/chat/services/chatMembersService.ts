@@ -1,5 +1,9 @@
 import {IChatMember} from "../database/types/chatMember.types";
-import {addChatMemberDto, getChatMembersDto} from "../../../types/dto/members-chat-DTO/membersChatDto";
+import {
+    addChatMemberDto,
+    getChatMembersDto,
+    updateMemberRoleDto
+} from "../../../types/dto/members-chat-DTO/membersChatDto";
 import {userRepository} from "../../auth/repositories/userRepository";
 import ApiError from "../../../error/ApiError";
 import {error} from "../../../utils/constants/errorMasseges";
@@ -145,7 +149,109 @@ const getChatMembers = async (data: getChatMembersDto): Promise<IChatMember[]> =
     return chatMembersRepository.findActiveMembersByChatId(data.chatId);
 }
 
+const updateMemberRole = async (data: updateMemberRoleDto): Promise<void> => {
+    const userDb = await userRepository.getUserById(data.userId);
+
+    if (!userDb) {
+        throw new ApiError(404, error.USER_NOT_FOUND);
+    }
+
+    if (userDb.isBlocked) {
+        throw new ApiError(403, error.USER_BLOCKED);
+    }
+
+    const targetUserDb = await userRepository.getUserById(data.targetUserId);
+
+    if (!targetUserDb) {
+        throw new ApiError(404, error.USER_NOT_FOUND);
+    }
+
+    if (targetUserDb.isBlocked) {
+        throw new ApiError(403, error.USER_BLOCKED);
+    }
+
+    const chatDb = await chatRepository.findChatForUser({
+        userId: data.userId,
+        chatId: data.chatId,
+        requireActive: false
+    });
+
+    if (!chatDb) {
+        throw new ApiError(404, error.CHAT_NOT_FOUND)
+    }
+
+    if (chatDb.status === ChatStatus.DELETED) {
+        throw new ApiError(404, error.CHAT_ALREADY_DELETED)
+    }
+
+    if (chatDb.status === ChatStatus.ARCHIVED) {
+        throw new ApiError(404, error.CHAT_ARCHIVED)
+    }
+
+    if (chatDb.type !== ChatType.GROUP) {
+        throw new ApiError(400, error.WRONG_CHAT_TYPE);
+    }
+
+    const currentMember = await chatMembersRepository.findActiveMember({
+        userId: data.userId,
+        chatId: data.chatId,
+    });
+
+    if (!currentMember) {
+        throw new ApiError(403, error.FORBIDDEN);
+    }
+
+    const targetMember = await chatMembersRepository.findActiveMember({
+        userId: data.targetUserId,
+        chatId: data.chatId,
+    });
+
+    if (!targetMember) {
+        throw new ApiError(404, error.TARGET_USER_NOT_MEMBER);
+    }
+
+    if (data.userId === data.targetUserId) {
+        throw new ApiError(400, error.CANNOT_CHANGE_OWN_ROLE);
+    }
+
+    if (![ChatRole.CREATOR, ChatRole.ADMIN].includes(currentMember.role)) {
+        throw new ApiError(403, error.FORBIDDEN);
+    }
+
+    if (targetMember.role === ChatRole.CREATOR) {
+        throw new ApiError(403, error.CANNOT_CHANGE_CREATOR_ROLE);
+    }
+
+    if (data.newRole === ChatRole.CREATOR) {
+        throw new ApiError(400, error.USE_TRANSFER_OWNERSHIP);
+    }
+
+    if (currentMember.role === ChatRole.ADMIN && targetMember.role === ChatRole.ADMIN) {
+        throw new ApiError(403, error.ADMIN_CANNOT_APPOINT_ADMIN);
+    }
+
+    if (currentMember.role === ChatRole.ADMIN && data.newRole === ChatRole.ADMIN) {
+        throw new ApiError(403, error.ADMIN_CANNOT_APPOINT_ADMIN);
+    }
+
+    const validRoles = [ChatRole.MEMBER, ChatRole.MODERATOR, ChatRole.ADMIN];
+    if (!validRoles.includes(data.newRole)) {
+        throw new ApiError(400, error.INVALID_ROLE);
+    }
+
+    if (targetMember.role === data.newRole) {
+        throw new ApiError(400, error.ROLE_ALREADY_SET);
+    }
+
+    await chatMembersRepository.updateMemberRoleById({
+        chatId: new Types.ObjectId(data.chatId),
+        userId: data.targetUserId,
+        newRole: data.newRole
+    });
+}
+
 export const chatMembersService = {
     addChatMember,
-    getChatMembers
+    getChatMembers,
+    updateMemberRole
 }
