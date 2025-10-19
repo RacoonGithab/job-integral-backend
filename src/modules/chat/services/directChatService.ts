@@ -12,6 +12,7 @@ import {ChatRole} from "../database/enums/chatMember.enums";
 import {chatMembersRepository} from "../repositories/chatMembersRepository";
 import {ChatStatus, ChatType} from "../database/enums/chat.enums";
 import {directChatRepository} from "../repositories/directChatRepository";
+import {fileDeletionService} from "../../../utils/chat-utils/fileDeletionService";
 
 const createDirectChat = async (data: createDirectChatDto): Promise<IChat> => {
 
@@ -122,6 +123,7 @@ const leaveDirectChat = async (data: leaveDirectChatDto): Promise<void> => {
     const activeCount = await chatMembersRepository.countActiveMembers(chatDb._id);
 
     if (activeCount === 0) {
+        await fileDeletionService.deleteChatFiles(chatDb._id.toString());
         await chatRepository.deleteChatHard(chatDb._id);
         await chatMembersRepository.deleteAllMembersByChatId(chatDb._id);
         return;

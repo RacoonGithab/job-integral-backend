@@ -22,4 +22,11 @@ export const env = {
     EMAIL_HOST_PASSWORD: process.env.EMAIL_HOST_PASSWORD as string | undefined,
     RESET_PASSWORD_MAX_REQUESTS: parseInt(process.env.RESET_PASSWORD_MAX_REQUESTS!),
     RESET_PASSWORD_WINDOW_SECONDS: parseInt(process.env.RESET_PASSWORD_WINDOW_SECONDS || '86400', 10),
+
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID as string,
+    FIREBASE_PRIVATE_KEY_ID: process.env.FIREBASE_PRIVATE_KEY_ID as string,
+    FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n') as string,
+    FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL as string,
+    FIREBASE_CLIENT_ID: process.env.FIREBASE_CLIENT_ID as string,
+    FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET as string,
 }

@@ -5,6 +5,8 @@ import {messageService} from "../services/messageService";
 const sendMessage = async (req: Request, res: Response) => {
     const { chatId } = req.params;
     const senderId = req.body.userId;
+    const files = req.files as Express.Multer.File[];
+
     const { type, text, attachments, replyTo, systemType } = req.body;
 
     const message = await messageService.sendMessage({
@@ -12,10 +14,10 @@ const sendMessage = async (req: Request, res: Response) => {
         senderId,
         type,
         text,
-        attachments,
-        replyTo,
+        attachments: attachments ? JSON.parse(attachments) : undefined,
+        replyTo: replyTo,
         systemType
-    });
+    }, files);
 
     res.status(201).json({ message });
 }

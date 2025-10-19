@@ -7,7 +7,7 @@ import {IMessage} from "../database/types/message.types";
 import {
     deleteMessageDto,
     getChatMessagesDto,
-    getMessagesResult,
+    getMessagesResult, MessageAttachment,
     sendMessageDto,
     updateMessageDto
 } from "../../../types/dto/message-DTO/messageDto";
@@ -15,8 +15,10 @@ import {userProfileRepository} from "../../user-profile/repositories/userProfile
 import {messageServiceValidate} from "./validators/messageValidator";
 import {directChatRepository} from "../repositories/directChatRepository";
 import {messageConstants} from "../../../utils/constants/messageConstants";
+import {fileUploadUtil} from "../../../utils/chat-utils/fileUploadUtil";
+import {fileDeletionService} from "../../../utils/chat-utils/fileDeletionService";
 
-const sendMessage = async (data: sendMessageDto): Promise<IMessage> => {
+const sendMessage = async (data: sendMessageDto, files?: Express.Multer.File[]): Promise<IMessage> => {
     const userDb = await userRepository.getUserById(data.senderId);
 
     if (!userDb) {
@@ -42,7 +44,32 @@ const sendMessage = async (data: sendMessageDto): Promise<IMessage> => {
         throw new ApiError(404, error.USER_NOT_FOUND);
     }
 
-    messageServiceValidate.validateMessageByType(data);
+    let attachments: MessageAttachment[] = data.attachments || [];
+
+    if (files && files.length > 0) {
+        const uploadedFiles = await Promise.all(
+            files.map(file =>
+                fileUploadUtil.uploadFile({
+                    chatId: data.chatId,
+                    senderId: data.senderId,
+                    file,
+                    messageType: data.type
+                })
+            )
+        );
+
+        const uploadedAttachments: MessageAttachment[] = uploadedFiles.map(uploadedFile => ({
+            type: data.type,
+            url: uploadedFile.url,
+            name: uploadedFile.filename,
+            size: uploadedFile.size,
+            mimeType: uploadedFile.mimeType
+        }));
+
+        attachments = [...attachments, ...uploadedAttachments];
+    }
+
+    messageServiceValidate.validateMessageByType({...data, attachments});
 
     let replyToData;
 
@@ -74,7 +101,7 @@ const sendMessage = async (data: sendMessageDto): Promise<IMessage> => {
         content: {
             type: data.type,
             text: data.text,
-            attachments: data.attachments,
+            attachments,
             replyTo: replyToData,
             systemType: data.systemType
         },
@@ -96,7 +123,6 @@ const sendMessage = async (data: sendMessageDto): Promise<IMessage> => {
     });
 
     return message;
-
 }
 
 
@@ -237,6 +263,14 @@ const deleteMessage = async (data: deleteMessageDto): Promise<void> => {
 
     if (messageDb.senderId !== data.userId) {
         throw new ApiError(403, error.FORBIDDEN);
+    }
+
+    const attachments = messageDb.content.attachments || [];
+
+    for (const attachment of attachments) {
+        if (attachment.url) {
+            await fileDeletionService.deleteFile(attachment.url);
+        }
     }
 
     await messageRepository.deleteMessageById({

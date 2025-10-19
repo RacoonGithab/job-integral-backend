@@ -9,6 +9,7 @@ import {chatMembersRepository} from "../repositories/chatMembersRepository";
 import {groupChatRepository} from "../repositories/groupChatRepository";
 import {chatRepository} from "../repositories/chatRepository";
 import {ChatStatus, ChatType} from "../database/enums/chat.enums";
+import {fileDeletionService} from "../../../utils/chat-utils/fileDeletionService";
 
 const createGroupChat = async (data: createGroupChatDto): Promise<IChat> => {
 
@@ -191,9 +192,11 @@ const deleteGroupChat = async (data: deleteGroupChatDto): Promise<void> => {
         throw new ApiError(404, error.FORBIDDEN);
     }
 
-    await chatRepository.deleteChatHard(chatDb._id);
-    await chatMembersRepository.deleteAllMembersByChatId(chatDb._id);
+    await fileDeletionService.deleteChatFiles(chatDb._id.toString());
 
+    await chatRepository.deleteChatHard(chatDb._id);
+
+    await chatMembersRepository.deleteAllMembersByChatId(chatDb._id);
 }
 
 export const groupChatService = {

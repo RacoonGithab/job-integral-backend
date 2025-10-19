@@ -2,16 +2,16 @@ import {resetPasswordDto} from "../../../types/dto/resetPasswordDto";
 import {userRepository} from "../../auth/repositories/userRepository";
 import ApiError from "../../../error/ApiError";
 import {error} from "../../../utils/constants/errorMasseges";
-import {createPasswordHash} from "../../../utils/createPasswordHash";
+import {createPasswordHash} from "../../../utils/password-utils/createPasswordHash";
 import {requestPasswordResetDto, verifyPasswordResetDto} from "../../../types/dto/passwoedResetTokenDto";
 import {verificationCodeRepository} from "../../auth/repositories/verificationCodeRepository";
 import {VerificationCodeType} from "@prisma/client";
 import {env} from "../../../config/secrets";
 import {passwordResetTokenRepository} from "../repositories/passwordResetTokenRepository";
-import {checkForgotPasswordRateLimitExceeded, incrementForgotPasswordRequestCount} from "../../../utils/limitPasswordReset";
-import {createExpirationDate, createVerificationCode} from "../../../utils/createVerificationCode";
+import {checkForgotPasswordRateLimitExceeded, incrementForgotPasswordRequestCount} from "../../../utils/password-utils/limitPasswordReset";
+import {createExpirationDate, createVerificationCode} from "../../../utils/verification-utils/createVerificationCode";
 import {EMAIL_DETAILS} from "../../../utils/constants/emailConstants";
-import {sendVerificationEmail} from "../../../utils/sendVerificationCode";
+import {sendVerificationEmail} from "../../../utils/verification-utils/sendVerificationCode";
 import {tokenUtils} from "../../../utils/tokenUtils";
 
 const initiatePasswordReset = async (data: requestPasswordResetDto): Promise<string> => {

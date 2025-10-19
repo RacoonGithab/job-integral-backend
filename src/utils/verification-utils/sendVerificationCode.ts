@@ -1,7 +1,7 @@
-import {mailTransporter} from "../config/mailTransporter";
-import {env} from "../config/secrets"
-import {createHtmlTemplate} from "./templates/createVerificationCodeHtml";
-import ApiError from "../error/ApiError"
+import {mailTransporter} from "../../config/mailTransporter";
+import {env} from "../../config/secrets"
+import {createHtmlTemplate} from "../templates/createVerificationCodeHtml";
+import ApiError from "../../error/ApiError"
 
 
 export const sendVerificationEmail = async (

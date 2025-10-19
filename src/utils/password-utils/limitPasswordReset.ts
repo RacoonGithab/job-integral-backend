@@ -1,5 +1,5 @@
-import {getRedisClient} from "../config/conectionRedis";
-import {env} from "../config/secrets";
+import {getRedisClient} from "../../config/conectionRedis";
+import {env} from "../../config/secrets";
 
 export const checkForgotPasswordRateLimitExceeded = async (identifier: string): Promise<boolean> => {
     const redisClient = getRedisClient();

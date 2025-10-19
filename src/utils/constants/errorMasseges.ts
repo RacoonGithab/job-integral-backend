@@ -6,6 +6,7 @@ export const error = {
     BAD_REQUEST: "Bad request",
     INTERNAL_SERVER_ERROR: "Internal server error",
     SERVER_ERROR: "Server error",
+    FIREBASE_ERROR: "Firebase not initialized — call initFirebase() first.",
 
     // users errors
     USER_NOT_FOUND:  "User not found",
