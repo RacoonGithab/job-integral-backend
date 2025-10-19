@@ -1,4 +1,4 @@
-import chatSocket from "../socket/chat/chatSocket";
+import chatSocket from "./chat/chatSocket";
 import userSocket from "./user/userSocket";
 import {Server, Socket} from "socket.io";
 

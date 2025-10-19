@@ -4,7 +4,7 @@ import {env} from "./config/secrets";
 import {initializeAppServices} from "./utils/init";
 import {Server} from "socket.io";
 import http from "http";
-import registerSocketHandler from "./modules/chat/server/socket/registerSocketHandler";
+import registerSocketHandler from "./modules/chat/socket/registerSocketHandler";
 
 const startServer = (app:Express, port: number):void => {
     app.listen(port, (err?:Error):void => {

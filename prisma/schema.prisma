@@ -42,6 +42,7 @@ model UserProfile {
   email       String? @map("contact_email")
   phoneNumber String? @map("phone_number")
   avatar      String?
+  companyName String? @map("company_name")
 
   userId String @unique @map("user_id")
   user   User   @relation("UserProfile", fields: [userId], references: [id], onDelete: Cascade)

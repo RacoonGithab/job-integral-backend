@@ -13,6 +13,8 @@ export const error = {
     USER_BLOCKED:  "User blocked",
     EMAIL_NOT_VERIFIED:  "Email not verified",
     NOT_PROFILE:"user does not have a profile",
+    PROFILE_ALREADY_EXISTS: "Profile already exists",
+    PROFILE_NOT_FOUND: "Profile not found",
 
     // Unauthorized errors
     INCORRECT_PASSWORD: "Password must be a valid password",

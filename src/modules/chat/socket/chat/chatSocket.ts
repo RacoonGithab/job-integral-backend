@@ -1,8 +1,8 @@
 import {Server, Socket} from "socket.io";
-import {chatMembersRepository} from "../../../repositories/chatMembersRepository";
-import {messageService} from "../../../services/messageService";
-import {sendMessageDto} from "../../../../../types/dto/message-DTO/messageDto";
-import {messageRepository} from "../../../repositories/messageRepository";
+import {chatMembersRepository} from "../../repositories/chatMembersRepository";
+import {messageService} from "../../services/messageService";
+import {sendMessageDto} from "../../../../types/dto/message-DTO/messageDto";
+import {messageRepository} from "../../repositories/messageRepository";
 
 const onlineUsers = new Map();
 

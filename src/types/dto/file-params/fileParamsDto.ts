@@ -12,6 +12,7 @@ export interface uploadedFileInfo {
     filename: string;
     size: number;
     mimeType: string;
+    originalName?: string;
 }
 
 export interface getFirebasePathDto {
@@ -19,4 +20,14 @@ export interface getFirebasePathDto {
     senderId: string,
     messageType: MessageType,
     filename: string
+}
+
+export interface getFirebaseAvatarPathDto {
+    userId: string;
+    filename: string
+}
+
+export interface uploadAvatarParamsDto {
+    file: Express.Multer.File;
+    userId: string;
 }
