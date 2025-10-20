@@ -1,5 +1,9 @@
 import {MessageType} from "../../modules/chat/database/enums/message.enums";
-import {getFirebaseAvatarPathDto, getFirebasePathDto} from "../../types/dto/file-params/fileParamsDto";
+import {
+    getFirebaseAvatarPathDto,
+    getFirebasePathDto,
+    getFirebasePostCardsPathDto
+} from "../../types/dto/file-params/fileParamsDto";
 
 const getTypeFolder = (messageType: MessageType): string => {
     switch (messageType) {
@@ -23,8 +27,13 @@ const getFirebaseAvatarPath = (data: getFirebaseAvatarPathDto): string => {
     return `user/profile/avatars/${data.userId}/${data.filename}`;
 };
 
+const getFirebasePostCardPath = (data: getFirebasePostCardsPathDto): string => {
+    return `user/post/cards/${data.userId}${data.postId}/${data.filename}`;
+};
+
 export const filePathHelper = {
     getTypeFolder,
     getFirebasePath,
-    getFirebaseAvatarPath
+    getFirebaseAvatarPath,
+    getFirebasePostCardPath
 }

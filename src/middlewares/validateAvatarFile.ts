@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import ApiError from "../error/ApiError";
 import {fireBaseConstants} from "../utils/constants/fireBaseConstatnts";
 
-export const validateAvatarFile = (req: Request, _res: Response, next: NextFunction) => {
+export const validateImageFile = (req: Request, _res: Response, next: NextFunction) => {
     const file = req.file;
 
     if (!file) {

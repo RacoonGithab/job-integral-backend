@@ -5,7 +5,7 @@ import {userProfileController} from "../controllers/userProfileController";
 import {validateRequestBody} from "../../../middlewares/validateRequestBody";
 import {createProfileSchema} from "../schema/createProfileSchema";
 import {upload} from "../../../config/multerConfig";
-import {validateAvatarFile} from "../../../middlewares/validateAvatarFile";
+import {validateImageFile} from "../../../middlewares/validateAvatarFile";
 
 const userProfileRouter = express.Router();
 
@@ -13,7 +13,7 @@ userProfileRouter.post(
     "/",
     upload.single("avatar"),
     accessTokenValidation,
-    validateAvatarFile,
+    validateImageFile,
     validateRequestBody(createProfileSchema),
     catchAsync(userProfileController.createUserprofile)
 );
@@ -22,7 +22,7 @@ userProfileRouter.patch(
     "/",
     upload.single("avatar"),
     accessTokenValidation,
-    validateAvatarFile,
+    validateImageFile,
     validateRequestBody(createProfileSchema.partial()),
     catchAsync(userProfileController.updateUserProfile)
 );

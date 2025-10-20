@@ -5,6 +5,7 @@ import updateUserRoleRouter from "../modules/auth/routers/updateUserRoleRouter";
 import chatRouter from "../modules/chat/routers/rootChatRouter";
 import userProfileRouter from "../modules/user-profile/routers/userProfileRouter";
 import taskRouter from "../modules/task/routers/taskRouter";
+import postRouter from "../modules/post/routers/postRouter";
 
 
 const rootRouter = express.Router();
@@ -20,5 +21,7 @@ rootRouter.use("/chat", chatRouter);
 rootRouter.use("/profile", userProfileRouter);
 
 rootRouter.use("/task", taskRouter);
+
+rootRouter.use("/post", postRouter)
 
 export default rootRouter;

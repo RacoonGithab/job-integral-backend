@@ -143,3 +143,15 @@ enum TaskStatus {
   ACTIVE
   COMPLETED
 }
+
+model Post {
+  id           String   @id @default(uuid())
+  title        String
+  content      String
+  isImportant  Boolean? @default(false) @map("is_important")
+  cardImageUrl String?  @map("card_image_url")
+
+  createdAt DateTime @default(now()) @map("crated_at")
+
+  @@map("post")
+}

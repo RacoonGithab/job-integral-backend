@@ -31,3 +31,16 @@ export interface uploadAvatarParamsDto {
     file: Express.Multer.File;
     userId: string;
 }
+
+export interface uploadPostCardsParamsDto {
+    file: Express.Multer.File;
+    postId: string;
+    userId: string;
+}
+
+export interface getFirebasePostCardsPathDto {
+    userId: string;
+    postId: string;
+    filename: string
+}
+
