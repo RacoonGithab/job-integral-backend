@@ -29,6 +29,7 @@ model User {
   Session            Session[]            @relation("UserSession")
   PasswordResetToken PasswordResetToken[] @relation("PasswordResetToken")
   UserProfile        UserProfile?         @relation("UserProfile")
+  Task               Task[]               @relation("AssignedTasks")
 
   @@map("users")
 }
@@ -119,4 +120,26 @@ model PasswordResetToken {
   User   User   @relation("PasswordResetToken", fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("password_reset_token")
+}
+
+model Task {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  isUrgent    Boolean    @default(false) @map("is_urgent")
+  status      TaskStatus @default(ACTIVE)
+
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  assignedToId String? @map("assigned_to_id")
+  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: Cascade)
+
+  @@map("task")
+}
+
+enum TaskStatus {
+  ACTIVE
+  COMPLETED
 }

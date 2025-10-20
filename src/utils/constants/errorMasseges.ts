@@ -15,6 +15,8 @@ export const error = {
     NOT_PROFILE:"user does not have a profile",
     PROFILE_ALREADY_EXISTS: "Profile already exists",
     PROFILE_NOT_FOUND: "Profile not found",
+    NOT_FOUND: "Not found",
+    INVALID_STATUS: "Invalid status transition: can only toggle between ACTIVE and COMPLETED",
 
     // Unauthorized errors
     INCORRECT_PASSWORD: "Password must be a valid password",

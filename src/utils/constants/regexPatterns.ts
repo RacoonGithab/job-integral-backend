@@ -15,4 +15,7 @@ export const regexPatterns = {
 
     START_DATE: /^\d{4}-\d{2}-\d{2}$/,
     END_DATE: /^\d{4}-\d{2}-\d{2}$/,
+
+    TASK_TITLE: /^[\w\d\s.,'"()\-!?;:@%&/\\\[\]{}+=_*#№]{1,255}$/,
+    TASK_DESCRIPTION: /^[\w\d\s.,'"()\-!?;:@%&/\\\[\]{}+=_*#№]{0,1000}$/,
 } as const;
